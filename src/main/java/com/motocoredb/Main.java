@@ -1,4 +1,4 @@
-package com.motobrother;
+package com.motocoredb;
 
 public class Main {
     public static void main(String[] args) {
