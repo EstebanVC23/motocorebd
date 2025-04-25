@@ -8,12 +8,13 @@ public class DataBaseConfig {
     private static final String CONFIG_FILE = "config.properties";
     private static Properties properties;
 
-    static {
+    public static void loadConfiguration() throws IOException {
         properties = new Properties();
         try (InputStream input = DataBaseConfig.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
+            if (input == null) {
+                throw new IOException("Database configuration file not found");
+            }
             properties.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load database configuration");
         }
     }
 
