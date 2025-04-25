@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryDaoImpl implements IInventoryDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public InventoryDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public List<InventoryMovement> getMovements(int productId) {

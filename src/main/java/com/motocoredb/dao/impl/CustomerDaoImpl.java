@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerDaoImpl implements ICustomerDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public CustomerDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createCustomer(Customer customer) {

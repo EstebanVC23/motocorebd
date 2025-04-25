@@ -12,11 +12,15 @@ public class DBConnection {
 
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(
-                DataBaseConfig.getDbUrl(),
-                DataBaseConfig.getDbUser(),
-                DataBaseConfig.getDbPassword()
-            );
+            try {
+                connection = DriverManager.getConnection(
+                    DataBaseConfig.getDbUrl(),
+                    DataBaseConfig.getDbUser(),
+                    DataBaseConfig.getDbPassword()
+                );
+            } catch (SQLException e) {
+                throw new SQLException("Failed to create database connection", e);
+            }
         }
         return connection;
     }
@@ -27,7 +31,7 @@ public class DBConnection {
                 connection.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error closing connection: " + e.getMessage());
         }
     }
 }

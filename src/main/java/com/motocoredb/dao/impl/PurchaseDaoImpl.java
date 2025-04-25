@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PurchaseDaoImpl implements IPurchaseDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public PurchaseDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createPurchase(Purchase purchase, List<PurchaseDetail> details) {

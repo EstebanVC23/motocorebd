@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDaoImpl implements IEmployeeDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public EmployeeDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createEmployee(Employee employee) {

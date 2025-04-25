@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoImpl implements IProductDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public ProductDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createProduct(Product product) {

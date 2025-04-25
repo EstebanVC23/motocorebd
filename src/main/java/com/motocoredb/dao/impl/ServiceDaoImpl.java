@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDaoImpl implements IServiceDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public ServiceDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createService(WorkshopService service) {

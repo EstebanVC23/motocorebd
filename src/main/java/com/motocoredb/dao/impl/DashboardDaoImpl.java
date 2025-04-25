@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardDaoImpl implements IDashboardDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public DashboardDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public List<Statistic> getTodaySales() {

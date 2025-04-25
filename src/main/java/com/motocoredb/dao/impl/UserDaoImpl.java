@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoImpl implements IUserDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public UserDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public User authenticate(String username, String password) {

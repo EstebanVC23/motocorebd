@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierDaoImpl implements ISupplierDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public SupplierDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createSupplier(Supplier supplier) {

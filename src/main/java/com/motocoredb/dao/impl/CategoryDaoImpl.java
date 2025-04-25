@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryDaoImpl implements ICategoryDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public CategoryDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public boolean createCategory(ProductCategory category) {

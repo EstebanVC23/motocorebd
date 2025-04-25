@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReportDaoImpl implements IReportDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public ReportDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public List<Statistic> getSalesStats(String period) {

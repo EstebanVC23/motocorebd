@@ -25,4 +25,6 @@ public class PurchaseController {
     }
 
     public List<PurchaseDetail> getPurchaseDetails(int purchaseId) {
-        return purchaseService.getPurchase
+        return purchaseService.getPurchaseDetails(purchaseId);
+    }
+}

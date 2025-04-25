@@ -8,14 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlertDaoImpl implements IAlertDao {
-    private final Connection connection = DBConnection.getConnection();
+    private final Connection connection;
+
+    public AlertDaoImpl() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
 
     @Override
     public List<Alert> getPendingAlerts() {
         List<Alert> alerts = new ArrayList<>();
-        String sql = "SELECT * FROM Alerts WHERE status = 'Pending'";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try {
+            String sql = "SELECT * FROM Alerts WHERE status = 'Pending'";
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 alerts.add(mapAlert(rs));
             }
@@ -40,8 +45,9 @@ public class AlertDaoImpl implements IAlertDao {
 
     @Override
     public boolean updateStatus(int alertId, String status) {
-        String sql = "UPDATE Alerts SET status = ?, readDate = CURRENT_TIMESTAMP WHERE alertId = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try {
+            String sql = "UPDATE Alerts SET status = ?, readDate = CURRENT_TIMESTAMP WHERE alertId = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, status);
             stmt.setInt(2, alertId);
             return stmt.executeUpdate() > 0;
