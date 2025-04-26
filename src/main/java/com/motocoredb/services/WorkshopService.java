@@ -2,7 +2,7 @@ package com.motocoredb.services;
 
 import com.motocoredb.dao.interfaces.IWorkshopDao;
 import com.motocoredb.models.WorkshopAppointment;
-import com.motocoredb.models.ServiceDetail;
+import com.motocoredb.models.AppointmentService ;
 import com.motocoredb.models.UsedProduct;
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class WorkshopService {
         this.workshopDao = workshopDao;
     }
     
-    public boolean createAppointment(WorkshopAppointment appointment, List<ServiceDetail> services) {
+    public boolean createAppointment(WorkshopAppointment appointment, List<AppointmentService> services) {
         return workshopDao.createAppointment(appointment, services);
     }
     

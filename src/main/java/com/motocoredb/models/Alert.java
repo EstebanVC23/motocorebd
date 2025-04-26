@@ -5,16 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Alert {
     private int alertId;
-    private String alertType; // 'LowStock', 'UpcomingAppointment'
+    private String alertType; // Low stock, Upcoming appointment
     private String message;
-    private Timestamp generationDate;
-    private Timestamp readDate;
-    private String status; // 'Pending', 'Read', 'Resolved'
+    private Timestamp generatedAt;
+    private Timestamp readAt;
+    private String status; // Pending, Read, Resolved
     private int referenceId;
-    private String referenceType; // 'Product', 'Appointment'
+    private String referenceType; // Product, Appointment
 }

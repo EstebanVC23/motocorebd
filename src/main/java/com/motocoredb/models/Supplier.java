@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Supplier {
     private int supplierId;
     private String companyName;
@@ -16,6 +14,6 @@ public class Supplier {
     private String contactPhone;
     private String contactEmail;
     private String address;
-    private String status; // 'Active', 'Inactive'
-    private Timestamp registrationDate;
+    private String status; // Active, Inactive
+    private Timestamp createdAt;
 }

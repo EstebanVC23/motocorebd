@@ -9,4 +9,5 @@ public interface IProductDao {
     List<Product> listAll();
     boolean updateProduct(Product product);
     boolean updateStock(int productId, int quantity);
+    boolean changeStatus(int productId, String status);
 }

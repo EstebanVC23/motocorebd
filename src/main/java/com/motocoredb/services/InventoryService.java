@@ -16,11 +16,19 @@ public class InventoryService {
         return inventoryDao.getMovements(productId);
     }
     
-    public boolean makeInventoryAdjustment(int productId, int quantity, String notes) {
-        return inventoryDao.adjustInventory(productId, quantity, notes);
+    public boolean makeInventoryAdjustment(int productId, int quantity, String notes, int userId) {
+        return inventoryDao.adjustInventory(productId, quantity, notes, userId);
     }
     
     public List<Product> getLowStockProducts() {
         return inventoryDao.getLowStockProducts();
+    }
+    
+    public boolean recordMovement(InventoryMovement movement) {
+        return inventoryDao.recordMovement(movement);
+    }
+    
+    public int getCurrentStock(int productId) {
+        return inventoryDao.getCurrentStock(productId);
     }
 }

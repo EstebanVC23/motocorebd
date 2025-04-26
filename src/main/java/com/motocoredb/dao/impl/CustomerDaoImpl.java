@@ -16,12 +16,25 @@ public class CustomerDaoImpl implements ICustomerDao {
 
     @Override
     public boolean createCustomer(Customer customer) {
-        String sql = "INSERT INTO Customers (customerType, nameOrBusinessName, idDocument) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Customers (customerType, nameOrCompany, identityDocument, address, phone, email, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, customer.getCustomerType());
-            stmt.setString(2, customer.getNameOrBusinessName());
-            stmt.setString(3, customer.getIdDocument());
-            return stmt.executeUpdate() > 0;
+            stmt.setString(2, customer.getNameOrCompany());
+            stmt.setString(3, customer.getIdentityDocument());
+            stmt.setString(4, customer.getAddress());
+            stmt.setString(5, customer.getPhone());
+            stmt.setString(6, customer.getEmail());
+            stmt.setString(7, customer.getStatus());
+            
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        customer.setCustomerId(generatedKeys.getInt(1));
+                    }
+                }
+            }
+            return affectedRows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -47,12 +60,12 @@ public class CustomerDaoImpl implements ICustomerDao {
         Customer customer = new Customer();
         customer.setCustomerId(rs.getInt("customerId"));
         customer.setCustomerType(rs.getString("customerType"));
-        customer.setNameOrBusinessName(rs.getString("nameOrBusinessName"));
-        customer.setIdDocument(rs.getString("idDocument"));
+        customer.setNameOrCompany(rs.getString("nameOrCompany"));
+        customer.setIdentityDocument(rs.getString("identityDocument"));
         customer.setAddress(rs.getString("address"));
         customer.setPhone(rs.getString("phone"));
         customer.setEmail(rs.getString("email"));
-        customer.setRegistrationDate(rs.getTimestamp("registrationDate"));
+        customer.setCreatedAt(rs.getTimestamp("createdAt"));
         customer.setPurchaseCount(rs.getInt("purchaseCount"));
         customer.setStatus(rs.getString("status"));
         return customer;
@@ -75,10 +88,10 @@ public class CustomerDaoImpl implements ICustomerDao {
 
     @Override
     public boolean updateCustomer(Customer customer) {
-        String sql = "UPDATE Customers SET nameOrBusinessName = ?, idDocument = ?, address = ?, phone = ?, email = ? WHERE customerId = ?";
+        String sql = "UPDATE Customers SET nameOrCompany = ?, identityDocument = ?, address = ?, phone = ?, email = ? WHERE customerId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, customer.getNameOrBusinessName());
-            stmt.setString(2, customer.getIdDocument());
+            stmt.setString(1, customer.getNameOrCompany());
+            stmt.setString(2, customer.getIdentityDocument());
             stmt.setString(3, customer.getAddress());
             stmt.setString(4, customer.getPhone());
             stmt.setString(5, customer.getEmail());

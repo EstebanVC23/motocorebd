@@ -35,8 +35,8 @@ public class AlertDaoImpl implements IAlertDao {
         alert.setAlertId(rs.getInt("alertId"));
         alert.setAlertType(rs.getString("alertType"));
         alert.setMessage(rs.getString("message"));
-        alert.setGenerationDate(rs.getTimestamp("generationDate"));
-        alert.setReadDate(rs.getTimestamp("readDate"));
+        alert.setGeneratedAt(rs.getTimestamp("generatedAt")); // Corregido de generationDate
+        alert.setReadAt(rs.getTimestamp("readAt")); // Corregido de readDate
         alert.setStatus(rs.getString("status"));
         alert.setReferenceId(rs.getInt("referenceId"));
         alert.setReferenceType(rs.getString("referenceType"));
@@ -46,7 +46,7 @@ public class AlertDaoImpl implements IAlertDao {
     @Override
     public boolean updateStatus(int alertId, String status) {
         try {
-            String sql = "UPDATE Alerts SET status = ?, readDate = CURRENT_TIMESTAMP WHERE alertId = ?";
+            String sql = "UPDATE Alerts SET status = ?, readAt = CURRENT_TIMESTAMP WHERE alertId = ?";
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, status);
             stmt.setInt(2, alertId);

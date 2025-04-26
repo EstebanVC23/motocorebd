@@ -1,7 +1,7 @@
 package com.motocoredb.controllers;
 
 import com.motocoredb.models.WorkshopAppointment;
-import com.motocoredb.models.ServiceDetail;
+import com.motocoredb.models.AppointmentService;
 import com.motocoredb.services.WorkshopService;
 import com.motocoredb.models.UsedProduct;
 
@@ -14,7 +14,7 @@ public class WorkshopController {
         this.workshopService = workshopService;
     }
 
-    public boolean createAppointment(WorkshopAppointment appointment, List<ServiceDetail> services) {
+    public boolean createAppointment(WorkshopAppointment appointment, List<AppointmentService> services) {
         return workshopService.createAppointment(appointment, services);
     }
 

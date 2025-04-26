@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import java.sql.Date;
 import java.sql.Time;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class WorkshopAppointment {
     private int appointmentId;
     private int customerId;
@@ -16,8 +14,8 @@ public class WorkshopAppointment {
     private Time scheduledTime;
     private String visitReason;
     private String motorcycleDescription;
-    private String licensePlate;
-    private String status; // 'Scheduled', 'InProgress', 'Completed', 'Canceled'
-    private int userId; // assigned mechanic
+    private String motorcyclePlate;
+    private String status; // Scheduled, In progress, Completed, Cancelled
+    private int userId;
     private String notes;
 }

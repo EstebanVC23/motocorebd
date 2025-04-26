@@ -9,4 +9,5 @@ public interface ISupplierDao {
     List<Supplier> listAll();
     boolean updateSupplier(Supplier supplier);
     boolean changeStatus(int id, String status);
+    Supplier getByTaxId(String taxId);
 }

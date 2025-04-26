@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Sale {
     private int saleId;
     private String invoiceNumber;
@@ -18,7 +16,7 @@ public class Sale {
     private double tax;
     private double discount;
     private double total;
-    private String paymentMethod; // 'Cash', 'Card', 'Transfer', 'Other'
-    private String status; // 'Completed', 'Canceled'
+    private String paymentMethod; // Cash, Card, Transfer, Other
+    private String status; // Completed, Cancelled
     private String notes;
 }

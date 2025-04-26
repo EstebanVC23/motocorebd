@@ -16,8 +16,8 @@ public class InventoryController {
         return inventoryService.getInventoryMovements(productId);
     }
 
-    public boolean makeInventoryAdjustment(int productId, int quantity, String notes) {
-        return inventoryService.makeInventoryAdjustment(productId, quantity, notes);
+    public boolean makeInventoryAdjustment(int productId, int quantity, String notes, int userId) {
+        return inventoryService.makeInventoryAdjustment(productId, quantity, notes, userId);
     }
 
     public List<Product> getLowStockProducts() {

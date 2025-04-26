@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Product {
     private int productId;
     private String productCode;
@@ -17,9 +15,9 @@ public class Product {
     private double purchasePrice;
     private double salePrice;
     private int currentStock;
-    private int minimumStock;
+    private int minStock;
     private int supplierId;
-    private String status; // 'Active', 'Inactive'
-    private Timestamp registrationDate;
-    private Timestamp lastUpdate;
+    private String status; // Active, Inactive
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

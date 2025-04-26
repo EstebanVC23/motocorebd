@@ -5,16 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class User {
     private int userId;
     private String fullName;
     private String username;
     private String password;
-    private String role; // 'Administrator', 'Seller', 'Mechanic'
-    private String status; // 'Active', 'Inactive'
-    private Timestamp registrationDate;
-    private Timestamp lastAccess;
+    private String role; // Administrator, Seller, Mechanic
+    private String status; // Active, Inactive
+    private Timestamp createdAt;
+    private Timestamp lastLogin;
 }

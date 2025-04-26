@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Purchase {
     private int purchaseId;
     private String invoiceNumber;
@@ -17,6 +15,6 @@ public class Purchase {
     private double subtotal;
     private double tax;
     private double total;
-    private String status; // 'Pending', 'Received', 'Canceled'
+    private String status; // Pending, Received, Cancelled
     private String notes;
 }

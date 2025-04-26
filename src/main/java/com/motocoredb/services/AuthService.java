@@ -12,8 +12,12 @@ public class AuthService {
     }
     
     public User login(String username, String password) {
-        String encryptedPassword = PasswordUtils.encrypt(password);
-        return userDao.authenticate(username, encryptedPassword);
+        User user = userDao.findByUsername(username);
+        
+        if (user != null && PasswordUtils.verify(password, user.getPassword())) {
+            return user;
+        }
+        return null;
     }
     
     public boolean register(User user) {
