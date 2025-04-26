@@ -5,7 +5,8 @@ import com.motocoredb.dao.impl.UserDaoImpl;
 import com.motocoredb.services.AuthService;
 import com.motocoredb.utils.DBConnection;
 import com.motocoredb.utils.LoggerUtil;
-import com.motocoredb.views.LoginFrame;
+import com.motocoredb.views.Auth.LoginFrame;
+
 import org.slf4j.Logger;
 
 import java.sql.SQLException;

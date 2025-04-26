@@ -70,4 +70,8 @@ public class AuthService {
             return false;
         }
     }
+
+    public boolean updateLastLogin(int userId) {
+        return userDao.updateLastLogin(userId);
+    }
 }
