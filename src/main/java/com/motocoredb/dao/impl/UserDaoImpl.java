@@ -132,12 +132,17 @@ public class UserDaoImpl implements IUserDao {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapUser(rs);
+                User user = mapUser(rs);
+                System.out.println("[DEBUG] Usuario encontrado: " + user.getUsername());
+                return user;
             }
+            System.out.println("[DEBUG] Usuario no encontrado: " + username);
+            return null;
         } catch (SQLException e) {
+            System.err.println("[ERROR SQL] Error al buscar usuario: " + e.getMessage());
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     @Override

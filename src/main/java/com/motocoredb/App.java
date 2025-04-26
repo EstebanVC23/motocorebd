@@ -1,6 +1,5 @@
 package com.motocoredb;
 
-import com.motocoredb.config.DataBaseConfig;
 import com.motocoredb.controllers.AuthController;
 import com.motocoredb.dao.impl.UserDaoImpl;
 import com.motocoredb.services.AuthService;
@@ -9,7 +8,6 @@ import com.motocoredb.utils.LoggerUtil;
 import com.motocoredb.views.LoginFrame;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class App {
@@ -25,14 +23,17 @@ public class App {
         }
     }
 
-    private static void initializeDatabase() throws IOException, SQLException {
+    private static void initializeDatabase() {
         try {
-            DataBaseConfig.loadConfiguration();
+            // La configuración ahora se carga automáticamente en el bloque static
             DBConnection.getConnection(); // Test connection
             logger.info("Database connection established successfully");
-        } catch (IOException | SQLException e) {
+        } catch (SQLException e) {
             logger.error("Database initialization failed", e);
-            throw e; // Re-lanzamos la excepción para manejarla en el main
+            showErrorAndExit("Cannot connect to database. Check configuration.");
+        } catch (Exception e) {
+            logger.error("Configuration loading failed", e);
+            showErrorAndExit("Failed to load database configuration");
         }
     }
 
@@ -48,7 +49,7 @@ public class App {
             AuthController authController = new AuthController(authService);
             
             // Start the application with login screen
-            javax.swing.SwingUtilities.invokeLater(() -> {
+            java.awt.EventQueue.invokeLater(() -> {
                 LoginFrame loginFrame = new LoginFrame(authController);
                 loginFrame.setVisible(true);
             });
