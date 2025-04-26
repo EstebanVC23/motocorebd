@@ -1,8 +1,8 @@
-package com.motocoredb.views.Main.Admin.paneles.forms;
+package com.motocoredb.views.forms.products;
 
 import com.motocoredb.models.Product;
 import com.motocoredb.services.ProductService;
-import com.motocoredb.views.Main.Admin.paneles.forms.utils.ProductFormStyleManager;
+import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,8 +71,8 @@ public class EditProductForm extends ProductFormBase {
         infoPanel.setOpaque(false);
         
         JLabel productIdLabel = new JLabel("ID: " + product.getProductCode());
-        productIdLabel.setFont(ProductFormStyleManager.FIELD_FONT);
-        productIdLabel.setForeground(ProductFormStyleManager.SECONDARY_COLOR);
+        productIdLabel.setFont(FormStyleManager.FIELD_FONT);
+        productIdLabel.setForeground(FormStyleManager.SECONDARY_COLOR);
         infoPanel.add(productIdLabel);
         
         return infoPanel;
@@ -86,10 +86,10 @@ public class EditProductForm extends ProductFormBase {
         statsPanel.setOpaque(false);
         
         JLabel statusLabel = new JLabel("Estado: " + product.getStatus());
-        statusLabel.setFont(ProductFormStyleManager.FIELD_FONT);
+        statusLabel.setFont(FormStyleManager.FIELD_FONT);
         statusLabel.setForeground(
             product.getStatus().equalsIgnoreCase("Active") ? 
-            ProductFormStyleManager.SUCCESS_COLOR : ProductFormStyleManager.ERROR_COLOR
+            FormStyleManager.SUCCESS_COLOR : FormStyleManager.ERROR_COLOR
         );
         statsPanel.add(statusLabel);
         
@@ -100,19 +100,19 @@ public class EditProductForm extends ProductFormBase {
      * Inicializa los campos del formulario con los valores del producto
      */
     private void initializeFields() {
-        nameField = ProductFormStyleManager.createStyledTextField();
+        nameField = FormStyleManager.createStyledTextField();
         nameField.setText(product.getName());
         
-        purchasePriceField = ProductFormStyleManager.createStyledTextField();
+        purchasePriceField = FormStyleManager.createStyledTextField();
         purchasePriceField.setText(String.valueOf(product.getPurchasePrice()));
         
-        salePriceField = ProductFormStyleManager.createStyledTextField();
+        salePriceField = FormStyleManager.createStyledTextField();
         salePriceField.setText(String.valueOf(product.getSalePrice()));
         
-        stockField = ProductFormStyleManager.createStyledTextField();
+        stockField = FormStyleManager.createStyledTextField();
         stockField.setText(String.valueOf(product.getCurrentStock()));
         
-        minStockField = ProductFormStyleManager.createStyledTextField();
+        minStockField = FormStyleManager.createStyledTextField();
         minStockField.setText(String.valueOf(product.getMinStock()));
     }
     
@@ -129,19 +129,19 @@ public class EditProductForm extends ProductFormBase {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.3;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Nombre:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Nombre:"), gbc);
         
         gbc.gridy = 1;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Precio de Compra:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Precio de Compra:"), gbc);
         
         gbc.gridy = 2;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Precio de Venta:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Precio de Venta:"), gbc);
         
         gbc.gridy = 3;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Stock Actual:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Stock Actual:"), gbc);
         
         gbc.gridy = 4;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Stock Mínimo:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Stock Mínimo:"), gbc);
         
         // Segunda columna (campos)
         gbc.gridx = 1;
@@ -166,8 +166,8 @@ public class EditProductForm extends ProductFormBase {
      * Configura los botones y sus acciones
      */
     private void setupButtons() {
-        JButton saveButton = ProductFormStyleManager.createPrimaryButton("Actualizar");
-        JButton cancelButton = ProductFormStyleManager.createSecondaryButton("Cancelar");
+        JButton saveButton = FormStyleManager.createPrimaryButton("Actualizar");
+        JButton cancelButton = FormStyleManager.createSecondaryButton("Cancelar");
         
         saveButton.addActionListener((ActionEvent e) -> updateProduct());
         cancelButton.addActionListener((ActionEvent e) -> dispose());
@@ -188,13 +188,13 @@ public class EditProductForm extends ProductFormBase {
             product.setMinStock(Integer.parseInt(minStockField.getText()));
 
             if (productService.updateProduct(product)) {
-                ProductFormStyleManager.showSuccessDialog(this, "Producto actualizado exitosamente");
+                FormStyleManager.showSuccessDialog(this, "Producto actualizado exitosamente");
                 dispose();
             } else {
-                ProductFormStyleManager.showErrorDialog(this, "Error al actualizar producto");
+                FormStyleManager.showErrorDialog(this, "Error al actualizar producto");
             }
         } catch (Exception ex) {
-            ProductFormStyleManager.showErrorDialog(this, "Error en los datos ingresados: " + ex.getMessage());
+            FormStyleManager.showErrorDialog(this, "Error en los datos ingresados: " + ex.getMessage());
         }
     }
 }

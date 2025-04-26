@@ -1,7 +1,7 @@
-package com.motocoredb.views.Main.Admin.paneles.forms;
+package com.motocoredb.views.forms.products;
 
-import com.motocoredb.views.Main.Admin.paneles.forms.utils.ProductFormStyleManager;
 import com.motocoredb.services.ProductService;
+import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.*;
 public abstract class ProductFormBase extends JFrame {
     protected final ProductService productService;
     protected JPanel containerPanel;
-    protected ProductFormStyleManager.RoundedPanel mainPanel;
+    protected FormStyleManager.RoundedPanel mainPanel;
     protected JPanel formPanel;
     protected JPanel buttonPanel;
 
@@ -36,12 +36,12 @@ public abstract class ProductFormBase extends JFrame {
     protected void setupPanels() {
         // Panel contenedor principal
         containerPanel = new JPanel(new BorderLayout());
-        containerPanel.setBackground(ProductFormStyleManager.BACKGROUND_COLOR);
+        containerPanel.setBackground(FormStyleManager.BACKGROUND_COLOR);
         containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Panel redondeado para el contenido principal
-        mainPanel = new ProductFormStyleManager.RoundedPanel(new BorderLayout(15, 15), 15);
-        mainPanel.setBackground(ProductFormStyleManager.PANEL_COLOR);
+        mainPanel = new FormStyleManager.RoundedPanel(new BorderLayout(15, 15), 15);
+        mainPanel.setBackground(FormStyleManager.PANEL_COLOR);
         mainPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(0, 0, 0, 20), 1, true),
                 BorderFactory.createEmptyBorder(20, 25, 20, 25)
@@ -76,7 +76,7 @@ public abstract class ProductFormBase extends JFrame {
             }
         }
         
-        JLabel titleLabel = ProductFormStyleManager.createHeaderLabel(title);
+        JLabel titleLabel = FormStyleManager.createHeaderLabel(title);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
         
         return headerPanel;
@@ -88,7 +88,7 @@ public abstract class ProductFormBase extends JFrame {
     protected JPanel createFormPanel(String title) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
-        panel.setBorder(ProductFormStyleManager.createTitledBorder(title));
+        panel.setBorder(FormStyleManager.createTitledBorder(title));
         return panel;
     }
     

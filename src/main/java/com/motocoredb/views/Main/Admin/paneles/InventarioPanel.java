@@ -2,8 +2,8 @@ package com.motocoredb.views.Main.Admin.paneles;
 
 import com.motocoredb.models.Product;
 import com.motocoredb.services.ProductService;
-import com.motocoredb.views.Main.Admin.paneles.forms.AddProductForm;
-import com.motocoredb.views.Main.Admin.paneles.forms.EditProductForm;
+import com.motocoredb.views.forms.products.AddProductForm;
+import com.motocoredb.views.forms.products.EditProductForm;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

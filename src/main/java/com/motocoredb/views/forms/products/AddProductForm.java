@@ -1,8 +1,8 @@
-package com.motocoredb.views.Main.Admin.paneles.forms;
+package com.motocoredb.views.forms.products;
 
 import com.motocoredb.models.Product;
 import com.motocoredb.services.ProductService;
-import com.motocoredb.views.Main.Admin.paneles.forms.utils.ProductFormStyleManager;
+import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +17,7 @@ public class AddProductForm extends ProductFormBase {
     private JTextField minStockField;
 
     public AddProductForm(ProductService productService) {
-        super(productService, "Agregar Nuevo Producto", 600, 600);
+        super(productService, "Agregar Nuevo Producto", 600, 620);
         initializeUI();
     }
 
@@ -48,12 +48,12 @@ public class AddProductForm extends ProductFormBase {
      * Inicializa los campos del formulario
      */
     private void initializeFields() {
-        codeField = ProductFormStyleManager.createStyledTextField();
-        nameField = ProductFormStyleManager.createStyledTextField();
-        purchasePriceField = ProductFormStyleManager.createStyledTextField();
-        salePriceField = ProductFormStyleManager.createStyledTextField();
-        stockField = ProductFormStyleManager.createStyledTextField();
-        minStockField = ProductFormStyleManager.createStyledTextField();
+        codeField = FormStyleManager.createStyledTextField();
+        nameField = FormStyleManager.createStyledTextField();
+        purchasePriceField = FormStyleManager.createStyledTextField();
+        salePriceField = FormStyleManager.createStyledTextField();
+        stockField = FormStyleManager.createStyledTextField();
+        minStockField = FormStyleManager.createStyledTextField();
     }
     
     /**
@@ -69,22 +69,22 @@ public class AddProductForm extends ProductFormBase {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.3;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Código:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Código:"), gbc);
         
         gbc.gridy = 1;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Nombre:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Nombre:"), gbc);
         
         gbc.gridy = 2;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Precio de Compra:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Precio de Compra:"), gbc);
         
         gbc.gridy = 3;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Precio de Venta:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Precio de Venta:"), gbc);
         
         gbc.gridy = 4;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Stock Actual:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Stock Actual:"), gbc);
         
         gbc.gridy = 5;
-        formPanel.add(ProductFormStyleManager.createStyledLabel("Stock Mínimo:"), gbc);
+        formPanel.add(FormStyleManager.createStyledLabel("Stock Mínimo:"), gbc);
         
         // Segunda columna (campos)
         gbc.gridx = 1;
@@ -112,8 +112,8 @@ public class AddProductForm extends ProductFormBase {
      * Configura los botones y sus acciones
      */
     private void setupButtons() {
-        JButton saveButton = ProductFormStyleManager.createPrimaryButton("Guardar");
-        JButton cancelButton = ProductFormStyleManager.createSecondaryButton("Cancelar");
+        JButton saveButton = FormStyleManager.createPrimaryButton("Guardar");
+        JButton cancelButton = FormStyleManager.createSecondaryButton("Cancelar");
         
         saveButton.addActionListener((ActionEvent e) -> saveProduct());
         cancelButton.addActionListener((ActionEvent e) -> dispose());
@@ -137,13 +137,13 @@ public class AddProductForm extends ProductFormBase {
             newProduct.setStatus("Active");
 
             if (productService.createProduct(newProduct)) {
-                ProductFormStyleManager.showSuccessDialog(this, "Producto agregado exitosamente");
+                FormStyleManager.showSuccessDialog(this, "Producto agregado exitosamente");
                 dispose();
             } else {
-                ProductFormStyleManager.showErrorDialog(this, "Error al agregar producto");
+                FormStyleManager.showErrorDialog(this, "Error al agregar producto");
             }
         } catch (Exception ex) {
-            ProductFormStyleManager.showErrorDialog(this, "Error en los datos ingresados: " + ex.getMessage());
+            FormStyleManager.showErrorDialog(this, "Error en los datos ingresados: " + ex.getMessage());
         }
     }
 }

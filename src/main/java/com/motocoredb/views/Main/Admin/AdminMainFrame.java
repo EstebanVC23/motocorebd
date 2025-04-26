@@ -7,6 +7,9 @@ import com.motocoredb.views.Auth.LoginFrame;
 import com.motocoredb.views.Main.navbar.Navbar;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.dao.impl.ProductDaoImpl;
+import com.motocoredb.services.CustomerService;
+import com.motocoredb.dao.impl.CustomerDaoImpl;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,14 +60,23 @@ public class AdminMainFrame extends JFrame {
             throw new RuntimeException("Error al inicializar ProductService: " + e.getMessage(), e);
         }
     
+        // Crear instancia de CustomerService con su DAO
+        CustomerService customerService;
+        try {
+            customerService = new CustomerService(new CustomerDaoImpl());
+        } catch (Exception e) {
+            throw new RuntimeException("Error al inicializar CustomerService: " + e.getMessage(), e);
+        }
+    
         // Registrar paneles con sus dependencias
         mainContentPanel.add(new InventarioPanel(productService), "Inventario");
+        mainContentPanel.add(new CustomersPanel(customerService), "Clientes");
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
     }
 
     private JPanel createNavBar() {
         // Opciones del navbar
-        String[] opciones = {"Inventario", "Clientes", "Proveedores", "Ventas", "Taller", "Reportes", "Perfil"};
+        String[] opciones = {"Inventario", "Empleados", "Clientes", "Proveedores", "Ventas", "Citas", "Reportes",  "Perfil"};
         return new Navbar(opciones, this::cambiarPanel, this::cerrarSesion);
     }
 

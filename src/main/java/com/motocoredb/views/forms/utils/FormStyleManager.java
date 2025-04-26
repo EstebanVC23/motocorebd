@@ -1,11 +1,11 @@
-package com.motocoredb.views.Main.Admin.paneles.forms.utils;
+package com.motocoredb.views.forms.utils;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
-public class ProductFormStyleManager {
+public class FormStyleManager {
     // Esquema de colores
     public static final Color PRIMARY_COLOR = new Color(25, 118, 210);
     public static final Color SECONDARY_COLOR = new Color(66, 165, 245);
