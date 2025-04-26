@@ -56,7 +56,7 @@ public class AdminMainFrame extends JFrame {
         } catch (Exception e) {
             throw new RuntimeException("Error al inicializar ProductService: " + e.getMessage(), e);
         }
-
+    
         // Registrar paneles con sus dependencias
         mainContentPanel.add(new InventarioPanel(productService), "Inventario");
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
