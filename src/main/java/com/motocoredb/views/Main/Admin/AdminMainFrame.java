@@ -6,13 +6,19 @@ import com.motocoredb.views.Main.Admin.paneles.*;
 import com.motocoredb.views.Auth.LoginFrame;
 import com.motocoredb.views.Main.navbar.Navbar;
 import com.motocoredb.services.ProductService;
+import com.motocoredb.services.StaffService;
+import com.motocoredb.services.SupplierService;
 import com.motocoredb.dao.impl.ProductDaoImpl;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.dao.impl.CustomerDaoImpl;
-
+import com.motocoredb.dao.impl.StaffDaoImpl;
+import com.motocoredb.dao.impl.SupplierDaoImpl;
+import com.motocoredb.dao.impl.WorkshopDaoImpl;
+import com.motocoredb.services.WorkshopService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 public class AdminMainFrame extends JFrame {
     private final AuthController authController;
@@ -31,52 +37,36 @@ public class AdminMainFrame extends JFrame {
         setSize(1400, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
-        // Configuración principal
         setLayout(new BorderLayout());
-
-        // Panel de navegación superior
         add(createNavBar(), BorderLayout.NORTH);
-
-        // Panel de contenido principal con CardLayout
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
-
-        // Registrar todos los paneles
-        registerPanels();
-
+        try {
+            registerPanels();
+        } catch (SQLException e) {
+            showErrorDialog("Error al registrar paneles: " + e.getMessage());
+        }
         add(mainContentPanel, BorderLayout.CENTER);
-
-        // Barra de estado inferior
         add(createStatusBar(), BorderLayout.SOUTH);
     }
 
-    private void registerPanels() {
-        // Crear instancia de ProductService con su DAO
-        ProductService productService;
-        try {
-            productService = new ProductService(new ProductDaoImpl());
-        } catch (Exception e) {
-            throw new RuntimeException("Error al inicializar ProductService: " + e.getMessage(), e);
-        }
-    
-        // Crear instancia de CustomerService con su DAO
-        CustomerService customerService;
-        try {
-            customerService = new CustomerService(new CustomerDaoImpl());
-        } catch (Exception e) {
-            throw new RuntimeException("Error al inicializar CustomerService: " + e.getMessage(), e);
-        }
-    
-        // Registrar paneles con sus dependencias
-        mainContentPanel.add(new InventarioPanel(productService), "Inventario");
+    private void registerPanels() throws SQLException {
+        ProductService productService = new ProductService(new ProductDaoImpl());
+        CustomerService customerService = new CustomerService(new CustomerDaoImpl());
+        StaffService staffService = new StaffService(new StaffDaoImpl());
+        SupplierService supplierService = new SupplierService(new SupplierDaoImpl());
+        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl()); // Constructor corregido
+
+        mainContentPanel.add(new InventoryPanel(productService), "Inventario");
         mainContentPanel.add(new CustomersPanel(customerService), "Clientes");
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
+        mainContentPanel.add(new StaffPanel(staffService), "Empleados");
+        mainContentPanel.add(new SupplierPanel(supplierService), "Proveedores");
+        mainContentPanel.add(new AppointmentsPanel(workshopService), "Citas");
     }
 
     private JPanel createNavBar() {
-        // Opciones del navbar
-        String[] opciones = {"Inventario", "Empleados", "Clientes", "Proveedores", "Ventas", "Citas", "Reportes",  "Perfil"};
+        String[] opciones = {"Inventario", "Empleados", "Clientes", "Proveedores", "Ventas", "Citas", "Reportes", "Perfil"};
         return new Navbar(opciones, this::cambiarPanel, this::cerrarSesion);
     }
 
@@ -84,7 +74,6 @@ public class AdminMainFrame extends JFrame {
         JPanel statusPanel = new JPanel(new BorderLayout());
         statusPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         statusPanel.setBackground(new Color(51, 51, 51));
-
         JLabel statusLabel = new JLabel(
             String.format("Usuario: %s | Rol: %s | Último acceso: %s",
                 usuario.getUsername(),
@@ -93,7 +82,6 @@ public class AdminMainFrame extends JFrame {
             )
         );
         statusLabel.setForeground(Color.WHITE);
-
         statusPanel.add(statusLabel, BorderLayout.WEST);
         return statusPanel;
     }
@@ -106,5 +94,9 @@ public class AdminMainFrame extends JFrame {
         authController.logout();
         dispose();
         new LoginFrame(authController).setVisible(true);
+    }
+
+    private void showErrorDialog(String errorMessage) {
+        JOptionPane.showMessageDialog(this, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

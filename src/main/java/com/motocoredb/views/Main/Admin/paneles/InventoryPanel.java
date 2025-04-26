@@ -11,12 +11,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-public class InventarioPanel extends JPanel {
+public class InventoryPanel extends JPanel {
     private final ProductService productService;
     private DefaultTableModel tableModel;
     private JTable productsTable;
 
-    public InventarioPanel(ProductService productService) {
+    public InventoryPanel(ProductService productService) {
         this.productService = productService;
         initUI();
         loadProducts();

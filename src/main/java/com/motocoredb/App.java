@@ -11,6 +11,18 @@ import org.slf4j.Logger;
 
 import java.sql.SQLException;
 
+/**
+ * Hay que corregir el panel de appointments
+ * falta el panel estadisticas y ventas
+ * faltan las otras vistas segun los usuarios
+ * falta el nivel de acceso a la base de datos en sql
+ * si se puede, hay que hacer un panel de configuracion
+ * falta panel de registrar ususairo
+ * si se puede, se puede subir la base de datos a un servidor
+ * falta imagen de login de la empresa
+ * falta readme
+ */
+
 public class App {
     private static final Logger logger = LoggerUtil.getLogger(App.class);
 
