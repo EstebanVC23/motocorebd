@@ -9,7 +9,8 @@ import com.motocoredb.views.forms.utils.FormStyleManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class CustomersPanel extends JPanel {
@@ -42,20 +43,15 @@ public class CustomersPanel extends JPanel {
         refreshBtn.addActionListener(e -> loadCustomers());
 
         JButton addBtn = FormStyleManager.createPrimaryButton("Nuevo Cliente");
-        addBtn.addActionListener(this::showAddCustomerForm);
-
-        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Cliente");
-        editBtn.addActionListener(this::showEditCustomerForm);
+        addBtn.addActionListener(e -> showAddCustomerForm());
 
         JButton deleteBtn = FormStyleManager.createSecondaryButton("Eliminar Cliente");
-        deleteBtn.addActionListener(this::deleteCustomer);
+        deleteBtn.addActionListener(e -> deleteCustomer());
 
         toolBar.add(refreshBtn);
         toolBar.addSeparator();
         toolBar.add(addBtn);
-        toolBar.add(editBtn);
-        toolBar.add(deleteBtn);
-
+        toolBar.add(deleteBtn); // Eliminamos el botón de editar
         add(toolBar, BorderLayout.NORTH);
 
         // Tabla de clientes
@@ -75,6 +71,16 @@ public class CustomersPanel extends JPanel {
         customersTable.setRowHeight(25);
         customersTable.setShowGrid(true);
         customersTable.setGridColor(Color.LIGHT_GRAY);
+
+        // Doble clic para editar
+        customersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    editCustomer();
+                }
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(customersTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
@@ -100,7 +106,7 @@ public class CustomersPanel extends JPanel {
         }
     }
 
-    private void showAddCustomerForm(ActionEvent e) {
+    private void showAddCustomerForm() {
         AddCustomerForm form = new AddCustomerForm(customerService);
         form.setVisible(true);
         form.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -111,7 +117,7 @@ public class CustomersPanel extends JPanel {
         });
     }
 
-    private void showEditCustomerForm(ActionEvent e) {
+    private void editCustomer() {
         int selectedRow = customersTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para editar.");
@@ -135,7 +141,7 @@ public class CustomersPanel extends JPanel {
         });
     }
 
-    private void deleteCustomer(ActionEvent e) {
+    private void deleteCustomer() {
         int selectedRow = customersTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");

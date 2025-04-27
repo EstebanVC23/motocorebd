@@ -10,6 +10,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class SupplierPanel extends JPanel {
@@ -43,27 +45,22 @@ public class SupplierPanel extends JPanel {
         refreshBtn.addActionListener(e -> loadSuppliers());
 
         JButton addBtn = FormStyleManager.createPrimaryButton("Nuevo Proveedor");
-        addBtn.addActionListener(this::showAddSupplierForm);
-
-        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Proveedor");
-        editBtn.addActionListener(this::showEditSupplierForm);
+        addBtn.addActionListener(this::showAddSupplierForm); // Referencia corregida
 
         JButton deleteBtn = FormStyleManager.createSecondaryButton("Eliminar Proveedor");
-        deleteBtn.addActionListener(this::deleteSupplier);
+        deleteBtn.addActionListener(this::deleteSupplier); // Referencia corregida
 
         toolBar.add(refreshBtn);
         toolBar.addSeparator();
         toolBar.add(addBtn);
-        toolBar.add(editBtn);
-        toolBar.add(deleteBtn);
-
+        toolBar.add(deleteBtn); // Eliminamos el botón de editar
         add(toolBar, BorderLayout.NORTH);
 
         // Tabla de proveedores
         tableModel = new DefaultTableModel(
-                new Object[]{"ID", "Empresa", "NIT", "Contacto", "Teléfono", "Email", "Dirección", "Estado", "Creado"},
-                0
-        ) {
+                new Object[] { "ID", "Empresa", "NIT", "Contacto", "Teléfono", "Email", "Dirección", "Estado",
+                        "Creado" },
+                0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -78,6 +75,16 @@ public class SupplierPanel extends JPanel {
         suppliersTable.setShowGrid(true);
         suppliersTable.setGridColor(Color.LIGHT_GRAY);
 
+        // Doble clic para editar
+        suppliersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    editSupplier();
+                }
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(suppliersTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         add(scrollPane, BorderLayout.CENTER);
@@ -88,7 +95,7 @@ public class SupplierPanel extends JPanel {
             List<Supplier> suppliers = supplierService.getAllSuppliers();
             tableModel.setRowCount(0);
             for (Supplier s : suppliers) {
-                tableModel.addRow(new Object[]{
+                tableModel.addRow(new Object[] {
                         s.getSupplierId(),
                         s.getCompanyName(),
                         s.getTaxId(),
@@ -101,7 +108,8 @@ public class SupplierPanel extends JPanel {
                 });
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar proveedores: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar proveedores: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -116,7 +124,7 @@ public class SupplierPanel extends JPanel {
         });
     }
 
-    private void showEditSupplierForm(ActionEvent e) {
+    private void editSupplier() {
         int selectedRow = suppliersTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un proveedor para editar.");
@@ -156,17 +164,17 @@ public class SupplierPanel extends JPanel {
 
         int confirmation = JOptionPane.showConfirmDialog(this,
                 "¿Está seguro de eliminar este proveedor?",
-                "Confirmación",
-                JOptionPane.YES_NO_OPTION);
+                "Confirmación", JOptionPane.YES_NO_OPTION);
 
         if (confirmation == JOptionPane.YES_OPTION) {
             supplier.setStatus("Inactive"); // Eliminación lógica
             boolean success = supplierService.updateSupplier(supplier);
             if (success) {
                 JOptionPane.showMessageDialog(this, "Proveedor eliminado exitosamente.");
-                loadSuppliers();
+                loadSuppliers(); // Recargar la lista de proveedores tras la eliminación
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el proveedor.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al eliminar el proveedor.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }

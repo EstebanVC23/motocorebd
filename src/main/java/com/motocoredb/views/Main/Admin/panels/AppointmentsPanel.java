@@ -9,7 +9,8 @@ import com.motocoredb.views.forms.utils.FormStyleManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class AppointmentsPanel extends JPanel {
@@ -43,20 +44,15 @@ public class AppointmentsPanel extends JPanel {
         refreshBtn.addActionListener(e -> loadWorkshopAppointment());
 
         JButton addBtn = FormStyleManager.createPrimaryButton("Nueva Cita");
-        addBtn.addActionListener(this::showAddAppointmentForm);
-
-        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Cita");
-        editBtn.addActionListener(this::showEditAppointmentForm);
+        addBtn.addActionListener(e -> showAddAppointmentForm());
 
         JButton deleteBtn = FormStyleManager.createSecondaryButton("Cancelar Cita");
-        deleteBtn.addActionListener(this::deleteAppointment);
+        deleteBtn.addActionListener(e -> deleteAppointment());
 
         toolBar.add(refreshBtn);
         toolBar.addSeparator();
         toolBar.add(addBtn);
-        toolBar.add(editBtn);
-        toolBar.add(deleteBtn);
-
+        toolBar.add(deleteBtn); // Eliminamos el botón de editar
         add(toolBar, BorderLayout.NORTH);
 
         // Tabla de citas
@@ -77,6 +73,16 @@ public class AppointmentsPanel extends JPanel {
         workshopTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workshopTable.setShowGrid(true);
         workshopTable.setGridColor(Color.LIGHT_GRAY);
+
+        // Doble clic para editar
+        workshopTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    editAppointment();
+                }
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(workshopTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
@@ -105,7 +111,7 @@ public class AppointmentsPanel extends JPanel {
         }
     }
 
-    private void showAddAppointmentForm(ActionEvent e) {
+    private void showAddAppointmentForm() {
         AddAppointmentForm form = new AddAppointmentForm(workshopService);
         form.setVisible(true);
         form.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -116,7 +122,7 @@ public class AppointmentsPanel extends JPanel {
         });
     }
 
-    private void showEditAppointmentForm(ActionEvent e) {
+    private void editAppointment() {
         int selectedRow = workshopTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione una cita para editar.");
@@ -140,7 +146,7 @@ public class AppointmentsPanel extends JPanel {
         });
     }
 
-    private void deleteAppointment(ActionEvent e) {
+    private void deleteAppointment() {
         int selectedRow = workshopTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione una cita para cancelar.");

@@ -22,6 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
 
+
 public class AdminMainFrame extends JFrame {
     private final AuthController authController;
     private final User usuario;
@@ -58,7 +59,7 @@ public class AdminMainFrame extends JFrame {
         CustomerService customerService = new CustomerService(new CustomerDaoImpl());
         StaffService staffService = new StaffService(new StaffDaoImpl());
         SupplierService supplierService = new SupplierService(new SupplierDaoImpl());
-        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl()); // Pasar la conexión correctamente
+        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl());
         SaleService salesService = new SaleService(new SaleDaoImpl());
 
         // Agregar paneles al contenedor principal
@@ -67,16 +68,17 @@ public class AdminMainFrame extends JFrame {
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
         mainContentPanel.add(new StaffPanel(staffService), "Empleados");
         mainContentPanel.add(new SupplierPanel(supplierService), "Proveedores");
-
-        // Panel de ventas con todos los servicios necesarios
         mainContentPanel.add(new SalePanel(salesService, productService, customerService), "Ventas");
-
-        // Panel de citas con conexión inicializada
         mainContentPanel.add(new AppointmentsPanel(workshopService), "Citas");
+        //mainContentPanel.add(new ReportsPanel(salesService, productService), "Reportes"); // Nuevo módulo
+        //mainContentPanel.add(new AlertsPanel(productService), "Alertas"); // Nuevo módulo
     }
 
     private JPanel createNavBar() {
-        String[] opciones = {"Inventario", "Empleados", "Clientes", "Proveedores", "Ventas", "Citas", "Reportes", "Perfil"};
+        String[] opciones = {
+            "Inventario", "Empleados", "Clientes", "Proveedores", "Ventas", "Citas", "Reportes", "Alertas", "Perfil"
+        };
+
         return new Navbar(opciones, this::cambiarPanel, this::cerrarSesion);
     }
 
@@ -93,6 +95,14 @@ public class AdminMainFrame extends JFrame {
         );
         statusLabel.setForeground(Color.WHITE);
         statusPanel.add(statusLabel, BorderLayout.WEST);
+
+        // Botón para cerrar sesión en la barra de estado
+        JButton logoutButton = new JButton("Cerrar Sesión");
+        logoutButton.setBackground(new Color(102, 102, 255));
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.addActionListener(e -> cerrarSesion());
+        statusPanel.add(logoutButton, BorderLayout.EAST);
+
         return statusPanel;
     }
 

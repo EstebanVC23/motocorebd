@@ -10,6 +10,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class StaffPanel extends JPanel {
@@ -43,26 +45,21 @@ public class StaffPanel extends JPanel {
         refreshBtn.addActionListener(e -> loadStaff());
 
         JButton addBtn = FormStyleManager.createPrimaryButton("Nuevo Personal");
-        addBtn.addActionListener(this::showAddStaffForm);
-
-        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Personal");
-        editBtn.addActionListener(this::showEditStaffForm);
+        addBtn.addActionListener(this::showAddStaffForm); // Referencia corregida
 
         JButton deleteBtn = FormStyleManager.createSecondaryButton("Eliminar Personal");
-        deleteBtn.addActionListener(this::deleteStaff);
+        deleteBtn.addActionListener(this::deleteStaff); // Referencia corregida
 
         toolBar.add(refreshBtn);
         toolBar.addSeparator();
         toolBar.add(addBtn);
-        toolBar.add(editBtn);
         toolBar.add(deleteBtn);
-
         add(toolBar, BorderLayout.NORTH);
 
         // Tabla del personal
         tableModel = new DefaultTableModel(
-                new Object[]{"ID", "Nombre", "Email", "Teléfono", "Puesto", "Estado"},
-                0
+            new Object[]{"ID", "Nombre", "Email", "Teléfono", "Puesto", "Estado"},
+            0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -78,6 +75,16 @@ public class StaffPanel extends JPanel {
         staffTable.setShowGrid(true);
         staffTable.setGridColor(Color.LIGHT_GRAY);
 
+        // Doble clic para editar
+        staffTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    editStaff();
+                }
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(staffTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         add(scrollPane, BorderLayout.CENTER);
@@ -89,12 +96,12 @@ public class StaffPanel extends JPanel {
             tableModel.setRowCount(0);
             for (Staff s : staffList) {
                 tableModel.addRow(new Object[]{
-                        s.getStaffId(),
-                        s.getFullName(),
-                        s.getEmail(),
-                        s.getPhone(),
-                        s.getPosition(),
-                        s.getStatus()
+                    s.getStaffId(),
+                    s.getFullName(),
+                    s.getEmail(),
+                    s.getPhone(),
+                    s.getPosition(),
+                    s.getStatus()
                 });
             }
         } catch (Exception ex) {
@@ -113,7 +120,7 @@ public class StaffPanel extends JPanel {
         });
     }
 
-    private void showEditStaffForm(ActionEvent e) {
+    private void editStaff() {
         int selectedRow = staffTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un miembro del personal para editar.");
