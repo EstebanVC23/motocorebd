@@ -17,9 +17,9 @@ public class StaffDaoImpl implements IStaffDao {
     @Override
     public boolean createStaff(Staff staff) {
         String sql = "INSERT INTO Staff (fullName, identityDocument, position, specialty, " +
-                   "phone, email, address, hireDate, status, userId) " +
-                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+                    "phone, email, address, hireDate, status, userId) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, staff.getFullName());
             stmt.setString(2, staff.getIdentityDocument());
@@ -30,8 +30,14 @@ public class StaffDaoImpl implements IStaffDao {
             stmt.setString(7, staff.getAddress());
             stmt.setDate(8, new java.sql.Date(staff.getHireDate().getTime()));
             stmt.setString(9, staff.getStatus());
-            stmt.setInt(10, staff.getUserId());
-            
+
+            // Convertir `userId = 0` a `NULL` para la base de datos
+            if (staff.getUserId() == 0) {
+                stmt.setNull(10, Types.INTEGER);
+            } else {
+                stmt.setInt(10, staff.getUserId());
+            }
+
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -97,9 +103,9 @@ public class StaffDaoImpl implements IStaffDao {
     @Override
     public boolean updateStaff(Staff staff) {
         String sql = "UPDATE Staff SET fullName = ?, identityDocument = ?, position = ?, " +
-                   "specialty = ?, phone = ?, email = ?, address = ?, status = ?, userId = ? " +
-                   "WHERE staffId = ?";
-        
+                    "specialty = ?, phone = ?, email = ?, address = ?, hireDate = ?, status = ?, userId = ? " +
+                    "WHERE staffId = ?";
+
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, staff.getFullName());
             stmt.setString(2, staff.getIdentityDocument());
@@ -108,11 +114,12 @@ public class StaffDaoImpl implements IStaffDao {
             stmt.setString(5, staff.getPhone());
             stmt.setString(6, staff.getEmail());
             stmt.setString(7, staff.getAddress());
-            stmt.setString(8, staff.getStatus());
-            stmt.setInt(9, staff.getUserId());
-            stmt.setInt(10, staff.getStaffId());
-            
-            return stmt.executeUpdate() > 0;
+            stmt.setDate(8, staff.getHireDate()); // Asegurarse de actualizar la fecha de contratación
+            stmt.setString(9, staff.getStatus());
+            stmt.setInt(10, staff.getUserId());
+            stmt.setInt(11, staff.getStaffId());
+
+            return stmt.executeUpdate() > 0; // Verificar si se actualizó alguna fila
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

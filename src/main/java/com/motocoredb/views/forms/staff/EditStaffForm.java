@@ -15,8 +15,8 @@ public class EditStaffForm extends StaffFormBase {
     private final Staff staff;
     private JTextField fullNameField;
     private JTextField identityDocumentField;
-    private JTextField positionField;
-    private JTextField specialtyField;
+    private JComboBox<String> positionCombo; // Cambiado a JComboBox
+    private JTextField specialtyField; // Texto libre para especialidad
     private JTextField phoneField;
     private JTextField emailField;
     private JTextField addressField;
@@ -68,10 +68,7 @@ public class EditStaffForm extends StaffFormBase {
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
-    
-    /**
-     * Crea el panel de información del personal
-     */
+
     private JPanel createInfoPanel() {
         JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         infoPanel.setOpaque(false);
@@ -83,10 +80,7 @@ public class EditStaffForm extends StaffFormBase {
         
         return infoPanel;
     }
-    
-    /**
-     * Crea el panel de estadísticas/estado del personal
-     */
+
     private JPanel createStatsPanel() {
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statsPanel.setOpaque(false);
@@ -101,21 +95,19 @@ public class EditStaffForm extends StaffFormBase {
         
         return statsPanel;
     }
-    
-    /**
-     * Inicializa los campos del formulario con los valores del personal
-     */
+
     private void initializeFields() {
         fullNameField = FormStyleManager.createStyledTextField();
         fullNameField.setText(staff.getFullName());
         
         identityDocumentField = FormStyleManager.createStyledTextField();
         identityDocumentField.setText(staff.getIdentityDocument());
+
+        // Crear JComboBox para "puesto"
+        positionCombo = new JComboBox<>(new String[] { "Mecánico", "Vendedor", "Administrador" });
+        positionCombo.setSelectedItem(staff.getPosition()); // Seleccionar el puesto actual
         
-        positionField = FormStyleManager.createStyledTextField();
-        positionField.setText(staff.getPosition());
-        
-        specialtyField = FormStyleManager.createStyledTextField();
+        specialtyField = FormStyleManager.createStyledTextField(); // Campo libre para especialidad
         specialtyField.setText(staff.getSpecialty());
         
         phoneField = FormStyleManager.createStyledTextField();
@@ -130,16 +122,12 @@ public class EditStaffForm extends StaffFormBase {
         hireDateField = FormStyleManager.createStyledTextField();
         hireDateField.setToolTipText("Formato: yyyy-MM-dd");
         
-        // Formatear la fecha actual del objeto staff
         if (staff.getHireDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             hireDateField.setText(sdf.format(staff.getHireDate()));
         }
     }
-    
-    /**
-     * Añade los campos al panel del formulario
-     */
+
     private void addFieldsToForm() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -183,7 +171,7 @@ public class EditStaffForm extends StaffFormBase {
         formPanel.add(identityDocumentField, gbc);
         
         gbc.gridy = 2;
-        formPanel.add(positionField, gbc);
+        formPanel.add(positionCombo, gbc); // Usar JComboBox
         
         gbc.gridy = 3;
         formPanel.add(specialtyField, gbc);
@@ -200,10 +188,7 @@ public class EditStaffForm extends StaffFormBase {
         gbc.gridy = 7;
         formPanel.add(hireDateField, gbc);
     }
-    
-    /**
-     * Configura los botones y sus acciones
-     */
+
     private void setupButtons() {
         JButton saveButton = FormStyleManager.createPrimaryButton("Actualizar");
         JButton cancelButton = FormStyleManager.createSecondaryButton("Cancelar");
@@ -214,30 +199,35 @@ public class EditStaffForm extends StaffFormBase {
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
     }
-    
-    /**
-     * Actualiza el personal con los datos del formulario
-     */
+
     private void updateStaff() {
         try {
+            // Actualizar los valores del objeto staff con los datos del formulario
             staff.setFullName(fullNameField.getText());
             staff.setIdentityDocument(identityDocumentField.getText());
-            staff.setPosition(positionField.getText());
+    
+            if (positionCombo.getSelectedIndex() != -1) {
+                staff.setPosition((String) positionCombo.getSelectedItem());
+            } else {
+                throw new Exception("Debe seleccionar un puesto.");
+            }
+    
             staff.setSpecialty(specialtyField.getText());
             staff.setPhone(phoneField.getText());
             staff.setEmail(emailField.getText());
             staff.setAddress(addressField.getText());
-            
-            // Convertir el texto de fecha a java.sql.Date
+    
+            // Convertir la fecha ingresada a java.sql.Date
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date utilDate = sdf.parse(hireDateField.getText());
-                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-                staff.setHireDate(sqlDate);
+                Date utilDate = sdf.parse(hireDateField.getText()); // Convierte de String a java.util.Date
+                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); // Convierte a java.sql.Date
+                staff.setHireDate(sqlDate); // Actualiza la fecha en el objeto Staff
             } catch (ParseException ex) {
                 throw new Exception("Formato de fecha inválido. Use yyyy-MM-dd");
             }
-
+    
+            // Actualizar el objeto staff en la base de datos
             if (staffService.updateStaff(staff)) {
                 FormStyleManager.showSuccessDialog(this, "Personal actualizado exitosamente");
                 dispose();
