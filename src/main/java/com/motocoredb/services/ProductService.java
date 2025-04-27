@@ -30,4 +30,22 @@ public class ProductService {
     public boolean updateStock(int productId, int quantity) {
         return productDao.updateStock(productId, quantity);
     }
+
+    public void reduceStock(int productId, int quantity) {
+        try {
+            productDao.reduceStock(productId, quantity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al actualizar el stock del producto");
+        }
+    }
+
+    public void increaseStock(int productId, int quantity) {
+        try {
+            productDao.increaseStock(productId, quantity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al incrementar el stock del producto");
+        }
+    }
 }

@@ -1,9 +1,10 @@
-package com.motocoredb.views.Main.Admin.paneles;
+package com.motocoredb.views.Main.Admin.panels;
 
 import com.motocoredb.models.Supplier;
 import com.motocoredb.services.SupplierService;
 import com.motocoredb.views.forms.suppliers.AddSupplierForm;
 import com.motocoredb.views.forms.suppliers.EditSupplierForm;
+import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,20 +26,29 @@ public class SupplierPanel extends JPanel {
     private void initUI() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setBackground(FormStyleManager.BACKGROUND_COLOR);
 
+        // Barra de herramientas CRUD
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+        toolBar.setBackground(FormStyleManager.BACKGROUND_COLOR);
 
-        JButton refreshBtn = new JButton("Actualizar");
+        JLabel titleLabel = new JLabel("Gestión de Proveedores");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(FormStyleManager.PRIMARY_COLOR);
+        toolBar.add(titleLabel);
+        toolBar.addSeparator();
+
+        JButton refreshBtn = FormStyleManager.createSecondaryButton("Actualizar");
         refreshBtn.addActionListener(e -> loadSuppliers());
 
-        JButton addBtn = new JButton("Nuevo Proveedor");
+        JButton addBtn = FormStyleManager.createPrimaryButton("Nuevo Proveedor");
         addBtn.addActionListener(this::showAddSupplierForm);
 
-        JButton editBtn = new JButton("Editar Proveedor");
+        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Proveedor");
         editBtn.addActionListener(this::showEditSupplierForm);
 
-        JButton deleteBtn = new JButton("Eliminar Proveedor");
+        JButton deleteBtn = FormStyleManager.createSecondaryButton("Eliminar Proveedor");
         deleteBtn.addActionListener(this::deleteSupplier);
 
         toolBar.add(refreshBtn);
@@ -49,9 +59,10 @@ public class SupplierPanel extends JPanel {
 
         add(toolBar, BorderLayout.NORTH);
 
+        // Tabla de proveedores
         tableModel = new DefaultTableModel(
-            new Object[]{"ID", "Empresa", "NIT", "Contacto", "Teléfono", "Email", "Dirección", "Estado", "Creado"},
-            0
+                new Object[]{"ID", "Empresa", "NIT", "Contacto", "Teléfono", "Email", "Dirección", "Estado", "Creado"},
+                0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -60,9 +71,10 @@ public class SupplierPanel extends JPanel {
         };
 
         suppliersTable = new JTable(tableModel);
-        suppliersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        suppliersTable.getTableHeader().setReorderingAllowed(false);
         suppliersTable.setRowHeight(25);
+        suppliersTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        suppliersTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        suppliersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         suppliersTable.setShowGrid(true);
         suppliersTable.setGridColor(Color.LIGHT_GRAY);
 
@@ -77,15 +89,15 @@ public class SupplierPanel extends JPanel {
             tableModel.setRowCount(0);
             for (Supplier s : suppliers) {
                 tableModel.addRow(new Object[]{
-                    s.getSupplierId(),
-                    s.getCompanyName(),
-                    s.getTaxId(),
-                    s.getContactPerson(),
-                    s.getContactPhone(),
-                    s.getContactEmail(),
-                    s.getAddress(),
-                    s.getStatus(),
-                    s.getCreatedAt()
+                        s.getSupplierId(),
+                        s.getCompanyName(),
+                        s.getTaxId(),
+                        s.getContactPerson(),
+                        s.getContactPhone(),
+                        s.getContactEmail(),
+                        s.getAddress(),
+                        s.getStatus(),
+                        s.getCreatedAt()
                 });
             }
         } catch (Exception e) {
@@ -94,7 +106,14 @@ public class SupplierPanel extends JPanel {
     }
 
     private void showAddSupplierForm(ActionEvent e) {
-        new AddSupplierForm(supplierService).setVisible(true);
+        AddSupplierForm form = new AddSupplierForm(supplierService);
+        form.setVisible(true);
+        form.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadSuppliers();
+            }
+        });
     }
 
     private void showEditSupplierForm(ActionEvent e) {
@@ -111,7 +130,14 @@ public class SupplierPanel extends JPanel {
             return;
         }
 
-        new EditSupplierForm(supplierService, supplier).setVisible(true);
+        EditSupplierForm form = new EditSupplierForm(supplierService, supplier);
+        form.setVisible(true);
+        form.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadSuppliers();
+            }
+        });
     }
 
     private void deleteSupplier(ActionEvent e) {
@@ -128,10 +154,15 @@ public class SupplierPanel extends JPanel {
             return;
         }
 
-        int confirmation = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este proveedor?", "Confirmación", JOptionPane.YES_NO_OPTION);
+        int confirmation = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de eliminar este proveedor?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION);
+
         if (confirmation == JOptionPane.YES_OPTION) {
-            supplier.setStatus("Inactive");
-            if (supplierService.updateSupplier(supplier)) {
+            supplier.setStatus("Inactive"); // Eliminación lógica
+            boolean success = supplierService.updateSupplier(supplier);
+            if (success) {
                 JOptionPane.showMessageDialog(this, "Proveedor eliminado exitosamente.");
                 loadSuppliers();
             } else {
@@ -140,4 +171,3 @@ public class SupplierPanel extends JPanel {
         }
     }
 }
-

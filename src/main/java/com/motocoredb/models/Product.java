@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 public class Product {
     private int productId;
     private String productCode;
-    private String name;
+    private String productName;
     private String description;
     private ProductCategory category; // Relación con la tabla ProductCategories
     private double purchasePrice;

@@ -48,19 +48,9 @@ public abstract class SupplierFormBase extends JFrame {
         getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
-    protected JPanel createHeaderPanel(String title, String iconPath) {
+    protected JPanel createHeaderPanel(String title) {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setOpaque(false);
-        
-        if (iconPath != null && !iconPath.isEmpty()) {
-            try {
-                ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
-                JLabel iconLabel = new JLabel(icon);
-                headerPanel.add(iconLabel, BorderLayout.WEST);
-            } catch (Exception e) {
-                // No es crítico si no se puede cargar el icono
-            }
-        }
         
         JLabel titleLabel = FormStyleManager.createHeaderLabel(title);
         headerPanel.add(titleLabel, BorderLayout.CENTER);

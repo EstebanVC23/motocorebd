@@ -1,4 +1,4 @@
-package com.motocoredb.views.Main.Admin.paneles;
+package com.motocoredb.views.Main.Admin.panels;
 
 import com.motocoredb.models.User;
 import com.motocoredb.utils.Colors;

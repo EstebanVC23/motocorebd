@@ -88,7 +88,7 @@ public class InventoryDaoImpl implements IInventoryDao {
             while (rs.next()) {
                 Product product = new Product();
                 product.setProductId(rs.getInt("productId"));
-                product.setName(rs.getString("name"));
+                product.setProductName(rs.getString("name"));
                 product.setCurrentStock(rs.getInt("currentStock"));
                 product.setMinStock(rs.getInt("minStock"));
                 product.setProductCode(rs.getString("productCode"));

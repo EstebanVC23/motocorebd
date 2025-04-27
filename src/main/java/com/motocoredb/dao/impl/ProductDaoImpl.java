@@ -27,7 +27,7 @@ public class ProductDaoImpl implements IProductDao {
 
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, product.getProductCode());
-            stmt.setString(2, product.getName());
+            stmt.setString(2, product.getProductName());
             stmt.setString(3, product.getDescription());
             stmt.setInt(4, product.getCategory().getCategoryId()); // Obtener el ID de la categoría
             stmt.setDouble(5, product.getPurchasePrice());
@@ -80,7 +80,7 @@ public class ProductDaoImpl implements IProductDao {
         Product product = new Product();
         product.setProductId(rs.getInt("productId"));
         product.setProductCode(rs.getString("productCode"));
-        product.setName(rs.getString("name"));
+        product.setProductName(rs.getString("name"));
         product.setDescription(rs.getString("description"));
         product.setPurchasePrice(rs.getDouble("purchasePrice"));
         product.setSalePrice(rs.getDouble("salePrice"));
@@ -153,7 +153,7 @@ public class ProductDaoImpl implements IProductDao {
         """;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, product.getName());
+            stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getDescription());
             stmt.setInt(3, product.getCategory().getCategoryId()); // Obtener el ID de la categoría
             stmt.setDouble(4, product.getPurchasePrice());
@@ -213,6 +213,37 @@ public class ProductDaoImpl implements IProductDao {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public void reduceStock(int productId, int quantity) {
+        String query = "UPDATE Products SET currentStock = currentStock - ? WHERE productId = ? AND currentStock >= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, quantity); // Cantidad a reducir
+            stmt.setInt(2, productId); // ID del producto
+            stmt.setInt(3, quantity); // Validación para evitar stock negativo
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new RuntimeException("Stock insuficiente para el producto con ID: " + productId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al reducir el stock del producto");
+        }
+    }
+
+    @Override
+    public void increaseStock(int productId, int quantity) {
+        String query = "UPDATE Products SET currentStock = currentStock + ? WHERE productId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, quantity); // Cantidad a incrementar
+            stmt.setInt(2, productId); // ID del producto
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al incrementar el stock del producto");
         }
     }
 }

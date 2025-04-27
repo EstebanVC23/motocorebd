@@ -16,4 +16,10 @@ public interface IWorkshopDao {
     boolean addUsedProducts(int appointmentId, List<UsedProduct> products);
 
     boolean deleteAppointment(int appointmentId);
+
+    List<WorkshopAppointment> getAllAppointments();
+
+    int setStateOfAppointment(int appointmentId, String state);
+
+    WorkshopAppointment getAppointmentById(int appointmentId);
 }

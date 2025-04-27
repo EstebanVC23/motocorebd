@@ -1,9 +1,10 @@
-package com.motocoredb.views.Main.Admin.paneles;
+package com.motocoredb.views.Main.Admin.panels;
 
 import com.motocoredb.models.Staff;
 import com.motocoredb.services.StaffService;
 import com.motocoredb.views.forms.staff.AddStaffForm;
 import com.motocoredb.views.forms.staff.EditStaffForm;
+import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,21 +26,29 @@ public class StaffPanel extends JPanel {
     private void initUI() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setBackground(FormStyleManager.BACKGROUND_COLOR);
 
         // Barra de herramientas CRUD
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+        toolBar.setBackground(FormStyleManager.BACKGROUND_COLOR);
 
-        JButton refreshBtn = new JButton("Actualizar");
+        JLabel titleLabel = new JLabel("Gestión del Personal");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(FormStyleManager.PRIMARY_COLOR);
+        toolBar.add(titleLabel);
+        toolBar.addSeparator();
+
+        JButton refreshBtn = FormStyleManager.createSecondaryButton("Actualizar");
         refreshBtn.addActionListener(e -> loadStaff());
 
-        JButton addBtn = new JButton("Nuevo Personal");
+        JButton addBtn = FormStyleManager.createPrimaryButton("Nuevo Personal");
         addBtn.addActionListener(this::showAddStaffForm);
 
-        JButton editBtn = new JButton("Editar Personal");
+        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Personal");
         editBtn.addActionListener(this::showEditStaffForm);
 
-        JButton deleteBtn = new JButton("Eliminar Personal");
+        JButton deleteBtn = FormStyleManager.createSecondaryButton("Eliminar Personal");
         deleteBtn.addActionListener(this::deleteStaff);
 
         toolBar.add(refreshBtn);
@@ -52,8 +61,8 @@ public class StaffPanel extends JPanel {
 
         // Tabla del personal
         tableModel = new DefaultTableModel(
-            new Object[]{"ID", "Nombre", "Email", "Teléfono", "Puesto", "Estado"},
-            0
+                new Object[]{"ID", "Nombre", "Email", "Teléfono", "Puesto", "Estado"},
+                0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -62,9 +71,10 @@ public class StaffPanel extends JPanel {
         };
 
         staffTable = new JTable(tableModel);
-        staffTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        staffTable.getTableHeader().setReorderingAllowed(false);
         staffTable.setRowHeight(25);
+        staffTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        staffTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        staffTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         staffTable.setShowGrid(true);
         staffTable.setGridColor(Color.LIGHT_GRAY);
 
@@ -79,12 +89,12 @@ public class StaffPanel extends JPanel {
             tableModel.setRowCount(0);
             for (Staff s : staffList) {
                 tableModel.addRow(new Object[]{
-                    s.getStaffId(),
-                    s.getFullName(),
-                    s.getEmail(),
-                    s.getPhone(),
-                    s.getPosition(),
-                    s.getStatus()
+                        s.getStaffId(),
+                        s.getFullName(),
+                        s.getEmail(),
+                        s.getPhone(),
+                        s.getPosition(),
+                        s.getStatus()
                 });
             }
         } catch (Exception ex) {
@@ -93,7 +103,14 @@ public class StaffPanel extends JPanel {
     }
 
     private void showAddStaffForm(ActionEvent e) {
-        new AddStaffForm(staffService).setVisible(true);
+        AddStaffForm form = new AddStaffForm(staffService);
+        form.setVisible(true);
+        form.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadStaff();
+            }
+        });
     }
 
     private void showEditStaffForm(ActionEvent e) {
@@ -110,7 +127,14 @@ public class StaffPanel extends JPanel {
             return;
         }
 
-        new EditStaffForm(staffService, staff).setVisible(true);
+        EditStaffForm form = new EditStaffForm(staffService, staff);
+        form.setVisible(true);
+        form.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadStaff();
+            }
+        });
     }
 
     private void deleteStaff(ActionEvent e) {
@@ -121,9 +145,15 @@ public class StaffPanel extends JPanel {
         }
 
         int staffId = (int) tableModel.getValueAt(selectedRow, 0);
-        int confirmation = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este miembro del personal?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        int confirmation = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de eliminar este miembro del personal?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION);
+
         if (confirmation == JOptionPane.YES_OPTION) {
-            if (staffService.deactivateStaff(staffId)) {
+            boolean success = staffService.deactivateStaff(staffId);
+            if (success) {
                 JOptionPane.showMessageDialog(this, "Personal eliminado exitosamente.");
                 loadStaff();
             } else {

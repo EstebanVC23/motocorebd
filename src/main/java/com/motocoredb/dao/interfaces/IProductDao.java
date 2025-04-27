@@ -10,4 +10,6 @@ public interface IProductDao {
     boolean updateProduct(Product product);
     boolean updateStock(int productId, int quantity);
     boolean changeStatus(int productId, String status);
+    void reduceStock(int productId, int quantity);
+    void increaseStock(int productId, int quantity);
 }

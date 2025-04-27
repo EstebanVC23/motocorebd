@@ -101,7 +101,7 @@ public class EditProductForm extends ProductFormBase {
      */
     private void initializeFields() {
         nameField = FormStyleManager.createStyledTextField();
-        nameField.setText(product.getName());
+        nameField.setText(product.getProductName());
         
         purchasePriceField = FormStyleManager.createStyledTextField();
         purchasePriceField.setText(String.valueOf(product.getPurchasePrice()));
@@ -181,7 +181,7 @@ public class EditProductForm extends ProductFormBase {
      */
     private void updateProduct() {
         try {
-            product.setName(nameField.getText());
+            product.setProductName(nameField.getText());
             product.setPurchasePrice(Double.parseDouble(purchasePriceField.getText()));
             product.setSalePrice(Double.parseDouble(salePriceField.getText()));
             product.setCurrentStock(Integer.parseInt(stockField.getText()));

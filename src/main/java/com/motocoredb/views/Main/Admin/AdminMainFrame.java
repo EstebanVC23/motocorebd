@@ -2,8 +2,8 @@ package com.motocoredb.views.Main.Admin;
 
 import com.motocoredb.controllers.AuthController;
 import com.motocoredb.models.User;
-import com.motocoredb.views.Main.Admin.paneles.*;
 import com.motocoredb.views.Auth.LoginFrame;
+import com.motocoredb.views.Main.Admin.panels.*;
 import com.motocoredb.views.Main.navbar.Navbar;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.services.StaffService;
@@ -15,6 +15,8 @@ import com.motocoredb.dao.impl.StaffDaoImpl;
 import com.motocoredb.dao.impl.SupplierDaoImpl;
 import com.motocoredb.dao.impl.WorkshopDaoImpl;
 import com.motocoredb.services.WorkshopService;
+import com.motocoredb.services.SaleService;
+import com.motocoredb.dao.impl.SaleDaoImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,17 +53,25 @@ public class AdminMainFrame extends JFrame {
     }
 
     private void registerPanels() throws SQLException {
+        // Inicializar servicios
         ProductService productService = new ProductService(new ProductDaoImpl());
         CustomerService customerService = new CustomerService(new CustomerDaoImpl());
         StaffService staffService = new StaffService(new StaffDaoImpl());
         SupplierService supplierService = new SupplierService(new SupplierDaoImpl());
-        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl()); // Constructor corregido
+        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl()); // Pasar la conexión correctamente
+        SaleService salesService = new SaleService(new SaleDaoImpl());
 
+        // Agregar paneles al contenedor principal
         mainContentPanel.add(new InventoryPanel(productService), "Inventario");
         mainContentPanel.add(new CustomersPanel(customerService), "Clientes");
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
         mainContentPanel.add(new StaffPanel(staffService), "Empleados");
         mainContentPanel.add(new SupplierPanel(supplierService), "Proveedores");
+
+        // Panel de ventas con todos los servicios necesarios
+        mainContentPanel.add(new SalePanel(salesService, productService, customerService), "Ventas");
+
+        // Panel de citas con conexión inicializada
         mainContentPanel.add(new AppointmentsPanel(workshopService), "Citas");
     }
 

@@ -22,7 +22,7 @@ public class AddSupplierForm extends SupplierFormBase {
 
     @Override
     protected void initializeUI() {
-        JPanel headerPanel = createHeaderPanel("Agregar Nuevo Proveedor", "/icons/supplier_add.png");
+        JPanel headerPanel = createHeaderPanel("Agregar Nuevo Proveedor");
         
         formPanel = createFormPanel("Información del Proveedor");
         initializeFields();

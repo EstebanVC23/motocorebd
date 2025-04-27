@@ -2,6 +2,7 @@ package com.motocoredb.views.Auth;
 
 import com.motocoredb.controllers.AuthController;
 import com.motocoredb.models.User;
+import com.motocoredb.utils.SessionManager;
 import com.motocoredb.views.Main.Admin.AdminMainFrame;
 
 import javax.swing.*;
@@ -139,32 +140,30 @@ public class LoginFrame extends JFrame {
     }
 
     private void configurarEventos() {
-        // Evento para el botón de login
         botonLogin.addActionListener(e -> {
-            String username = campoUsuario.getText().trim();
-            String password = new String(campoPassword.getPassword()).trim();
+        String username = campoUsuario.getText().trim();
+        String password = new String(campoPassword.getPassword()).trim();
 
-            if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "Por favor complete todos los campos", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Por favor complete todos los campos", 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            User authenticatedUser = authController.login(username, password);
-            if (authenticatedUser != null) {
-                // Login exitoso
-                dispose();
-                // Abrir ventana principal con el usuario autenticado
-                new AdminMainFrame(authenticatedUser, authController).setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Usuario o contraseña incorrectos", 
-                    "Error de autenticación", 
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        User authenticatedUser = authController.login(username, password);
+        if (authenticatedUser != null) {
+            SessionManager.setSession(authenticatedUser); // Guarda el usuario logueado
+            dispose();
+            new AdminMainFrame(authenticatedUser, authController).setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, 
+                "Usuario o contraseña incorrectos", 
+                "Error de autenticación", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+    });
 
         // Evento para el botón de registro
         botonRegistro.addActionListener(e -> {

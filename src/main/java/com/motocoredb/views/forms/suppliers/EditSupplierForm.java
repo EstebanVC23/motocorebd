@@ -26,7 +26,7 @@ public class EditSupplierForm extends SupplierFormBase {
 
     @Override
     protected void initializeUI() {
-        JPanel headerPanel = createHeaderPanel("Editar Proveedor", "/icons/supplier_edit.png");
+        JPanel headerPanel = createHeaderPanel("Editar Proveedor");
 
         formPanel = createFormPanel("Información del Proveedor");
         initializeFields();

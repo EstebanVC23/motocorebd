@@ -9,4 +9,7 @@ public interface ISaleDao {
     List<Sale> getByDateRange(String startDate, String endDate);
     boolean cancelSale(int saleId);
     List<SaleDetail> getDetails(int saleId);
+    boolean updateSale(Sale sale);
+    Sale getSaleById(int saleId);
+    SaleDetail getSaleDetailBySaleId(int saleId);
 }

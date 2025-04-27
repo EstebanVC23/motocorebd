@@ -1,9 +1,10 @@
-package com.motocoredb.views.Main.Admin.paneles;
+package com.motocoredb.views.Main.Admin.panels;
 
 import com.motocoredb.models.Customer;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.views.forms.customers.EditCustomerForm;
 import com.motocoredb.views.forms.customers.AddCustomerForm;
+import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -29,17 +30,24 @@ public class CustomersPanel extends JPanel {
         // Barra de herramientas CRUD
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+        toolBar.setBackground(FormStyleManager.BACKGROUND_COLOR);
 
-        JButton refreshBtn = new JButton("Actualizar");
+        JLabel titleLabel = new JLabel("Gestión de Clientes");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(FormStyleManager.PRIMARY_COLOR);
+        toolBar.add(titleLabel);
+        toolBar.addSeparator();
+
+        JButton refreshBtn = FormStyleManager.createSecondaryButton("Actualizar");
         refreshBtn.addActionListener(e -> loadCustomers());
 
-        JButton addBtn = new JButton("Nuevo Cliente");
+        JButton addBtn = FormStyleManager.createPrimaryButton("Nuevo Cliente");
         addBtn.addActionListener(this::showAddCustomerForm);
 
-        JButton editBtn = new JButton("Editar Cliente");
+        JButton editBtn = FormStyleManager.createSecondaryButton("Editar Cliente");
         editBtn.addActionListener(this::showEditCustomerForm);
 
-        JButton deleteBtn = new JButton("Eliminar Cliente");
+        JButton deleteBtn = FormStyleManager.createSecondaryButton("Eliminar Cliente");
         deleteBtn.addActionListener(this::deleteCustomer);
 
         toolBar.add(refreshBtn);
@@ -52,8 +60,8 @@ public class CustomersPanel extends JPanel {
 
         // Tabla de clientes
         tableModel = new DefaultTableModel(
-            new Object[]{"ID", "Nombre", "Email", "Teléfono", "Dirección", "Estado"},
-            0
+                new Object[]{"ID", "Nombre", "Email", "Teléfono", "Dirección", "Estado"},
+                0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -79,12 +87,12 @@ public class CustomersPanel extends JPanel {
             tableModel.setRowCount(0);
             for (Customer c : customers) {
                 tableModel.addRow(new Object[]{
-                    c.getCustomerId(),
-                    c.getNameOrCompany(),
-                    c.getEmail(),
-                    c.getPhone(),
-                    c.getAddress(),
-                    c.getStatus()
+                        c.getCustomerId(),
+                        c.getNameOrCompany(),
+                        c.getEmail(),
+                        c.getPhone(),
+                        c.getAddress(),
+                        c.getStatus()
                 });
             }
         } catch (Exception e) {
@@ -93,7 +101,14 @@ public class CustomersPanel extends JPanel {
     }
 
     private void showAddCustomerForm(ActionEvent e) {
-        new AddCustomerForm(customerService).setVisible(true); // Abrir nueva ventana para agregar cliente
+        AddCustomerForm form = new AddCustomerForm(customerService);
+        form.setVisible(true);
+        form.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadCustomers();
+            }
+        });
     }
 
     private void showEditCustomerForm(ActionEvent e) {
@@ -110,7 +125,14 @@ public class CustomersPanel extends JPanel {
             return;
         }
 
-        new EditCustomerForm(customerService, customer).setVisible(true); // Abrir nueva ventana para editar cliente
+        EditCustomerForm form = new EditCustomerForm(customerService, customer);
+        form.setVisible(true);
+        form.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                loadCustomers();
+            }
+        });
     }
 
     private void deleteCustomer(ActionEvent e) {
@@ -121,9 +143,15 @@ public class CustomersPanel extends JPanel {
         }
 
         int customerId = (int) tableModel.getValueAt(selectedRow, 0);
-        int confirmation = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este cliente?", "Confirmación", JOptionPane.YES_NO_OPTION);
+
+        int confirmation = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de que desea eliminar este cliente?",
+                "Confirmación",
+                JOptionPane.YES_NO_OPTION);
+
         if (confirmation == JOptionPane.YES_OPTION) {
-            if (customerService.deactivateCustomer(customerId)) {
+            boolean success = customerService.deactivateCustomer(customerId);
+            if (success) {
                 JOptionPane.showMessageDialog(this, "Cliente eliminado exitosamente.");
                 loadCustomers();
             } else {

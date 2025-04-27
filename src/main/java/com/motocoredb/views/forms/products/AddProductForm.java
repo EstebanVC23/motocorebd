@@ -129,7 +129,7 @@ public class AddProductForm extends ProductFormBase {
         try {
             Product newProduct = new Product();
             newProduct.setProductCode(codeField.getText());
-            newProduct.setName(nameField.getText());
+            newProduct.setProductName(nameField.getText());
             newProduct.setPurchasePrice(Double.parseDouble(purchasePriceField.getText()));
             newProduct.setSalePrice(Double.parseDouble(salePriceField.getText()));
             newProduct.setCurrentStock(Integer.parseInt(stockField.getText()));
