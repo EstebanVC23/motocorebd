@@ -19,9 +19,10 @@ public class EditSupplierForm extends SupplierFormBase {
     private JTextField phoneField;
     private JTextField emailField;
     private JTextField addressField;
+    private JComboBox<String> statusCombo; // Añadido para gestionar el estado
 
     public EditSupplierForm(SupplierService supplierService, Supplier supplier) {
-        super(supplierService, "Editar Proveedor", 500, 500);
+        super(supplierService, "Editar Proveedor", 500, 550); // Ajusté la altura para el nuevo campo
         this.supplier = supplier;
         initializeUI();
         loadSupplierData();
@@ -53,6 +54,9 @@ public class EditSupplierForm extends SupplierFormBase {
         emailField = FormStyleManager.createStyledTextField();
 
         addressField = FormStyleManager.createStyledTextField();
+        
+        // Crear ComboBox para el estado
+        statusCombo = new JComboBox<>(new String[] { "Active", "Inactive" });
     }
 
 
@@ -78,6 +82,9 @@ public class EditSupplierForm extends SupplierFormBase {
 
         gbc.gridy = 4;
         formPanel.add(FormStyleManager.createStyledLabel("Dirección:"), gbc);
+        
+        gbc.gridy = 5;
+        formPanel.add(FormStyleManager.createStyledLabel("Estado:"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -95,6 +102,9 @@ public class EditSupplierForm extends SupplierFormBase {
 
         gbc.gridy = 4;
         formPanel.add(addressField, gbc);
+        
+        gbc.gridy = 5;
+        formPanel.add(statusCombo, gbc);
     }
 
     private void setupButtons() {
@@ -114,6 +124,9 @@ public class EditSupplierForm extends SupplierFormBase {
         phoneField.setText(supplier.getContactPhone());
         emailField.setText(supplier.getContactEmail());
         addressField.setText(supplier.getAddress());
+        
+        // Cargar el estado actual
+        statusCombo.setSelectedItem(supplier.getStatus());
     }
 
     private void updateSupplier(ActionEvent e) {
@@ -123,6 +136,13 @@ public class EditSupplierForm extends SupplierFormBase {
             supplier.setContactPhone(phoneField.getText());
             supplier.setContactEmail(emailField.getText());
             supplier.setAddress(addressField.getText());
+            
+            // Actualizar el estado del proveedor
+            if (statusCombo.getSelectedIndex() != -1) {
+                supplier.setStatus((String) statusCombo.getSelectedItem());
+            } else {
+                throw new Exception("Debe seleccionar un estado.");
+            }
 
             if (supplierService.updateSupplier(supplier)) {
                 FormStyleManager.showSuccessDialog(this, "Proveedor actualizado correctamente");
