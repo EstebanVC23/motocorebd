@@ -273,12 +273,6 @@ public class SalePanel extends JPanel {
     
             // Obtener la lista de ventas con depuración
             List<Sale> sales = saleService.getSalesByDateRange(null, null);
-            System.out.println("Ventas obtenidas: " + sales.size());
-    
-            if (sales.isEmpty()) {
-                System.out.println("No se encontraron ventas en la base de datos");
-                return;
-            }
     
             // Obtener todos los usuarios y clientes
             List<User> users = userService.getAllUsers();
