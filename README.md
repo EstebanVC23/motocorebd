@@ -1,118 +1,132 @@
-# README - Sistema de Gestión de Taller Mecánico (MotocoreDB)
+# MotocoreDB - Sistema de Gestión de Taller Mecánico
 
-## Descripción del Proyecto
-Este proyecto es una aplicación Java para la gestión integral de talleres mecánicos, que permite administrar citas, clientes, productos usados, alertas y otros aspectos operativos. La aplicación sigue una arquitectura multicapa (MVC) y utiliza Swing para la interfaz gráfica.
+## Descripción
+MotocoreDB es una aplicación Java diseñada específicamente para la gestión integral de talleres mecánicos. Permite administrar eficientemente aspectos operativos del taller, con enfoque principal en la programación de citas y gestión de información.
 
-## Estructura del Proyecto
-
-```
-motocoredb/
-├── pom.xml
-├── README.md
-├── alertconfig.properties
-├── config.properties
-├── .vscode/
-│   └── settings.json
-├── lib/
-│   ├── jcalendar-1.4.jar
-│   └── LGoodDatePicker-11.2.1.jar
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/
-│   │   │       └── motocoredb/
-│   │   │           ├── controllers/
-│   │   │           ├── dao/
-│   │   │           │   ├── impl/
-│   │   │           │   └── interfaces/
-│   │   │           ├── models/
-│   │   │           ├── services/
-│   │   │           └── views/
-│   │   │               ├── Main/
-│   │   │               │   ├── navbar/
-│   │   │               │   └── panels/
-│   │   │               ├── forms/
-│   │   │               │   └── appointments/
-│   │   │               └── utils/
-│   │   └── resources/
-│   │       ├── config.properties
-│   │       └── img/
-│   └── test/
-│       └── java/
-└── target/
-    ├── classes/
-    └── generated-sources/
-```
+## Características Principales
+- **Agendamiento de Citas**: Programación y seguimiento de citas con clientes
+- **Administración de Clientes**: Base de datos de clientes y sus vehículos
+- **Control de Inventario**: Gestión de repuestos y productos utilizados
+- **Reportes y Estadísticas**: Información detallada para la toma de decisiones
 
 ## Requisitos del Sistema
-
-- Java JDK 11 o superior
-- Maven 3.6.0 o superior
-- MySQL 5.7 o superior (o compatible)
-- 4GB RAM mínimo
-- 500MB de espacio en disco
-
-## Configuración Inicial
-
-1. **Base de Datos**:
-   - Crear una base de datos MySQL llamada `motocoredb`
-   - Ejecutar el script SQL ubicado en `src/main/resources/sql/init_db.sql`
-
-2. **Configuración**:
-   - Editar el archivo `config.properties` con las credenciales de tu base de datos:
-     ```
-     db.url=jdbc:mysql://localhost:3306/motocoredb
-     db.user=tu_usuario
-     db.password=tu_contraseña
-     ```
+- **Sistema Operativo**: Windows 10/11, macOS 10.14+, o Linux (distribuciones modernas)
+- **Java**: JDK 11 o superior
+- **Base de Datos**: MySQL 5.7 o superior
+- **Memoria RAM**: 4GB mínimo recomendado
+- **Espacio en Disco**: 500MB disponibles
+- **Resolución de Pantalla**: 1280x720 o superior
 
 ## Instalación
 
+### Preparación del Entorno
+1. Instale Java JDK 11 o superior en su sistema
+2. Asegúrese de tener MySQL instalado y en funcionamiento
+3. Verifique que Maven esté instalado (versión 3.6.0 o superior)
+
+### Instalación de la Aplicación
 ```bash
 git clone https://github.com/EstebanVC23/motocoredb.git
 cd motocoredb
 mvn clean install
 ```
 
-## Ejecución
+### Configuración de la Base de Datos
+1. Cree una base de datos MySQL denominada `motocoredb`
+2. Ejecute el script de inicialización ubicado en `src/main/resources/sql/init_db.sql`
+3. Edite el archivo `config.properties` con las credenciales de acceso a su base de datos:
+```
+db.url=jdbc:mysql://localhost:3306/motocoredb
+db.user=su_usuario
+db.password=su_contraseña
+```
 
+### Ejecución del Sistema
 ```bash
 mvn exec:java -Dexec.mainClass="com.motocoredb.App"
 ```
+Alternativamente, puede ejecutar la clase App desde su entorno de desarrollo integrado (IDE).
 
-O ejecutar la clase `App` desde tu IDE favorito.
+## Primera Configuración
+Al iniciar la aplicación por primera vez, se recomienda:
+- Establecer los parámetros básicos del taller (nombre, dirección, datos de contacto)
+- Crear las cuentas de usuario para los diferentes roles (administrador, mecánico, recepcionista)
 
-## Características Principales
+## Módulos del Sistema
 
-- Gestión de citas (creación, modificación, cancelación)
-- Administración de clientes
-- Control de inventario de productos usados
-- Sistema de alertas para citas próximas
-- Interfaces diferenciadas para administradores y personal
-- Reportes y estadísticas
+### Agendamiento de Citas
+- Programar nuevas citas (exclusivamente para agendar, sin gestión de servicios)
+- Visualizar agenda (diaria, semanal, mensual)
+- Asignar fechas y horarios
 
-## Dependencias Principales
+**Nota importante**: El sistema solo permite agendar citas, no gestiona servicios asociados a las mismas.
 
-- MySQL Connector
-- SLF4J + Logback (logging)
-- Apache Commons Lang3
-- JUnit (para pruebas)
-- jCalendar (para selección de fechas)
-- LGoodDatePicker (para manejo de fechas/horas)
+### Administración de Clientes
+- Registro de clientes con datos personales y de contacto
+- Gestión de vehículos asociados a cada cliente
+- Historial de citas agendadas
 
-## Licencia
+### Control de Inventario
+- Catálogo completo de productos y repuestos
+- Control de existencias
+- Gestión de proveedores
+- Registro de movimientos (entradas, salidas, ajustes)
 
-Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detalles.
+**Nota**: El sistema no cuenta con funcionalidad para enviar alertas sobre niveles de inventario.
 
-## Contribución
+### Reportes y Estadísticas
+- Análisis de citas programadas por período
+- Información de clientes registrados
+- Niveles de inventario actual
+- Exportación de informes en formatos PDF, Excel y CSV
 
-Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
-1. Haz un fork del proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Haz commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Haz push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+## Solución de Problemas
 
----
+| Problema | Posible Causa | Solución |
+|----------|---------------|----------|
+| Error de conexión a la base de datos | Credenciales incorrectas | Verificar archivo config.properties |
+| | MySQL no está en ejecución | Iniciar el servicio de MySQL |
+| La aplicación se ejecuta lentamente | Recursos insuficientes | Cerrar aplicaciones no utilizadas |
+| | Base de datos muy grande | Considerar una limpieza o archivado |
+| Errores en los reportes | Datos inconsistentes | Ejecutar la herramienta de verificación de datos |
+| | Permisos insuficientes | Verificar rol del usuario |
 
-**Nota**: Este README es un template básico. Ajustar según las necesidades específicas del proyecto.
+## Información Técnica
+
+### Arquitectura del Sistema
+MotocoreDB sigue una arquitectura multicapa (MVC):
+- **Modelo**: Representa los datos y la lógica de negocio (`package com.motocoredb.models`)
+- **Vista**: Interfaces gráficas desarrolladas con Swing (`package com.motocoredb.views`)
+- **Controlador**: Maneja la interacción entre la vista y el modelo (`package com.motocoredb.controllers`)
+
+Además, se implementa un patrón DAO (Data Access Object) para abstraer y encapsular el acceso a la base de datos.
+
+### Tecnologías Utilizadas
+- **Java**: Lenguaje de programación principal (JDK 11+)
+- **Swing**: Biblioteca para la interfaz gráfica
+- **MySQL**: Sistema de gestión de base de datos
+- **Maven**: Gestión de dependencias y construcción
+- **jCalendar y LGoodDatePicker**: Componentes para la gestión de fechas
+- **SLF4J + Logback**: Framework de logging
+
+### Estructura de Directorios
+```
+motocoredb/
+├── src/
+│   ├── main/
+│   │   ├── java/com/motocoredb/
+│   │   │   ├── controllers/  # Controladores de la aplicación
+│   │   │   ├── dao/          # Objetos de acceso a datos
+│   │   │   │   ├── impl/     # Implementaciones concretas
+│   │   │   │   └── interfaces/ # Interfaces DAO
+│   │   │   ├── models/       # Entidades y modelos de datos
+│   │   │   ├── services/     # Servicios de negocio
+│   │   │   └── views/        # Interfaces gráficas
+│   │   │       ├── Main/     # Ventana principal
+│   │   │       ├── forms/    # Formularios específicos
+│   │   │       └── utils/    # Componentes reutilizables
+│   │   └── resources/        # Recursos estáticos
+│   └── test/                 # Pruebas unitarias
+├── lib/                      # Bibliotecas externas
+└── config.properties         # Archivo de configuración
+```
