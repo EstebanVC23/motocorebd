@@ -27,7 +27,7 @@ public class EditStaffForm extends StaffFormBase {
     private JTextField hireDateField;
 
     public EditStaffForm(StaffService staffService, Staff staff) {
-        super(staffService, "Editar Personal", 600, 700);
+        super(staffService, "Editar Personal", 600, 800);
         this.staff = staff;
         initializeUI();
     }
@@ -89,7 +89,7 @@ public class EditStaffForm extends StaffFormBase {
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statsPanel.setOpaque(false);
         
-        JLabel statusLabel = new JLabel("Estado: " + staff.getStatus());
+        JLabel statusLabel = new JLabel("Estado actual: " + staff.getStatus());
         statusLabel.setFont(FormStyleManager.FIELD_FONT);
         statusLabel.setForeground(
             staff.getStatus().equalsIgnoreCase("Active") ? 
