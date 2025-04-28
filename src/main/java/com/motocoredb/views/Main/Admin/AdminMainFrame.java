@@ -10,8 +10,10 @@ import com.motocoredb.services.StaffService;
 import com.motocoredb.services.SupplierService;
 import com.motocoredb.services.UserService;
 import com.motocoredb.dao.impl.ProductDaoImpl;
+import com.motocoredb.services.AlertService;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.services.InventoryService;
+import com.motocoredb.dao.impl.AlertDaoImpl;
 import com.motocoredb.dao.impl.CustomerDaoImpl;
 import com.motocoredb.dao.impl.InventoryDaoImpl;
 import com.motocoredb.dao.impl.StaffDaoImpl;
@@ -67,7 +69,8 @@ public class AdminMainFrame extends JFrame {
         UserService userService = new UserService(new UserDaoImpl());
         SaleService salesService = new SaleService(new SaleDaoImpl());
         InventoryService inventoryService = new InventoryService(new InventoryDaoImpl());
-    
+        AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar AlertService
+
         // Agregar paneles al contenedor principal
         mainContentPanel.add(new InventoryPanel(productService), "Inventario");
         mainContentPanel.add(new CustomersPanel(customerService), "Clientes");
@@ -76,12 +79,10 @@ public class AdminMainFrame extends JFrame {
         mainContentPanel.add(new SupplierPanel(supplierService), "Proveedores");
         mainContentPanel.add(new SalePanel(salesService, productService, customerService, userService), "Ventas");
         mainContentPanel.add(new AppointmentsPanel(workshopService), "Citas");
-    
-        // Agregar ReportPanel con los servicios necesarios
         mainContentPanel.add(new ReportPanel(salesService, inventoryService), "Reportes");
-    
-        // Opcional: Panel de alertas (comentado por ahora)
-        // mainContentPanel.add(new AlertsPanel(productService), "Alertas");
+
+        // Agregar AlertPanel
+        mainContentPanel.add(new AlertPanel(alertService, productService, workshopService), "Alertas");
     }
 
     private JPanel createNavBar() {
