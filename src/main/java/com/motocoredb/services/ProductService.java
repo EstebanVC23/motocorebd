@@ -2,6 +2,8 @@ package com.motocoredb.services;
 
 import com.motocoredb.dao.interfaces.IProductDao;
 import com.motocoredb.models.Product;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductService {
@@ -46,6 +48,15 @@ public class ProductService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error al incrementar el stock del producto");
+        }
+    }
+
+    public List<Product> getLowStockProducts() {
+        try {
+            return productDao.findLowStockProducts(); // Delegamos la consulta al DAO
+        } catch (Exception e) {
+            System.err.println("Error al obtener los productos con bajo stock: " + e.getMessage());
+            return new ArrayList<>(); // Retorna una lista vacía en caso de error
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.motocoredb.views.forms.sales;
 
 import com.motocoredb.services.SaleService;
-import com.motocoredb.views.forms.utils.FormStyleManager;
+import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
 import java.awt.*;

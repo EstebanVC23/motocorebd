@@ -1,79 +1,78 @@
 package com.motocoredb.views.forms.appointments;
 
-import com.motocoredb.services.WorkshopService;
-import com.motocoredb.views.forms.utils.FormStyleManager;
-
 import javax.swing.*;
+
+import com.motocoredb.views.utils.FormStyleManager;
+
 import java.awt.*;
 
 public abstract class AppointmentFormBase extends JFrame {
-    protected final WorkshopService appointmentService;
-    protected JPanel containerPanel;
-    protected FormStyleManager.RoundedPanel mainPanel;
-    protected JPanel formPanel;
-    protected JPanel buttonPanel;
+    protected JPanel mainPanel; // Panel principal
+    protected JPanel formPanel; // Panel del formulario
+    protected JPanel buttonPanel; // Panel de botones
+    protected JPanel headerPanel; // Panel del encabezado
 
-    public AppointmentFormBase(WorkshopService appointmentService, String title, int width, int height) {
-        this.appointmentService = appointmentService;
-        initializeFrame(title, width, height);
-        setupPanels();
-    }
-
-    protected void initializeFrame(String title, int width, int height) {
+    protected AppointmentFormBase(String title, int width, int height) {
         setTitle(title);
         setSize(width, height);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(FormStyleManager.BACKGROUND_COLOR);
+        add(mainPanel);
+
+        initializeBaseComponents();
     }
 
-    protected void setupPanels() {
-        containerPanel = new JPanel(new BorderLayout());
-        containerPanel.setBackground(FormStyleManager.BACKGROUND_COLOR);
-        containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        mainPanel = new FormStyleManager.RoundedPanel(new BorderLayout(15, 15), 15);
-        mainPanel.setBackground(FormStyleManager.PANEL_COLOR);
-        mainPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0, 0, 0, 20), 1, true),
-                BorderFactory.createEmptyBorder(20, 25, 20, 25)
-        ));
-        
-        buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-        buttonPanel.setOpaque(false);
-        
-        containerPanel.add(mainPanel, BorderLayout.CENTER);
-        add(containerPanel);
-        
-        getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    private void initializeBaseComponents() {
+        headerPanel = createHeaderPanel();
+        formPanel = createFormPanel();
+        buttonPanel = createButtonPanel();
+
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(formPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    protected JPanel createHeaderPanel(String title, String iconPath) {
-        JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
+    // Método abstracto para inicializar elementos específicos del formulario
+    protected abstract void initializeForm();
+
+    protected JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         headerPanel.setOpaque(false);
-        
-        if (iconPath != null && !iconPath.isEmpty()) {
-            try {
-                ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
-                JLabel iconLabel = new JLabel(icon);
-                headerPanel.add(iconLabel, BorderLayout.WEST);
-            } catch (Exception e) {
-                // No es crítico si no se puede cargar el icono
-            }
-        }
-        
-        JLabel titleLabel = FormStyleManager.createHeaderLabel(title);
-        headerPanel.add(titleLabel, BorderLayout.CENTER);
-        
+
+        JLabel headerTitle = FormStyleManager.createHeaderLabel(getTitle());
+        headerPanel.add(headerTitle);
+
         return headerPanel;
     }
 
-    protected JPanel createFormPanel(String title) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setOpaque(false);
-        panel.setBorder(FormStyleManager.createTitledBorder(title));
-        return panel;
+    protected JPanel createFormPanel() {
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(FormStyleManager.PANEL_COLOR);
+        return formPanel;
     }
-    
-    protected abstract void initializeUI();
+
+    protected JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
+
+        JButton saveButton = FormStyleManager.createPrimaryButton("Guardar");
+        JButton cancelButton = FormStyleManager.createSecondaryButton("Cancelar");
+
+        saveButton.addActionListener(e -> onSave());
+        cancelButton.addActionListener(e -> onCancel());
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        return buttonPanel;
+    }
+
+    // Métodos abstractos para las acciones de botones
+    protected abstract void onSave();
+
+    protected abstract void onCancel();
 }

@@ -6,9 +6,9 @@ import com.motocoredb.models.ProductCategory;
 import com.motocoredb.models.InventoryMovement;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.services.SupplierService;
+import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.services.CategoryService;
 import com.motocoredb.services.InventoryService;
-import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import java.awt.*;

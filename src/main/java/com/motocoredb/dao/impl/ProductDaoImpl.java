@@ -246,4 +246,59 @@ public class ProductDaoImpl implements IProductDao {
             throw new RuntimeException("Error al incrementar el stock del producto");
         }
     }
+
+    @Override
+    public List<Product> findLowStockProducts() {
+        List<Product> products = new ArrayList<>();
+        String query = "SELECT p.*, pc.categoryName, s.companyName " +
+                    "FROM Products p " +
+                    "LEFT JOIN ProductCategories pc ON p.categoryId = pc.categoryId " +
+                    "LEFT JOIN Suppliers s ON p.supplierId = s.supplierId " +
+                    "WHERE p.currentStock < p.minStock";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                ProductCategory category = new ProductCategory(
+                    rs.getInt("categoryId"),
+                    rs.getString("categoryName"),
+                    rs.getString("description"),
+                    rs.getString("status")
+                );
+
+                Supplier supplier = new Supplier(
+                    rs.getInt("supplierId"),
+                    rs.getString("companyName"),
+                    rs.getString("taxId"),
+                    rs.getString("contactPerson"),
+                    rs.getString("contactPhone"),
+                    rs.getString("contactEmail"),
+                    rs.getString("address"),
+                    rs.getString("status"),
+                    rs.getTimestamp("createdAt")
+                );
+
+                Product product = new Product(
+                    rs.getInt("productId"),
+                    rs.getString("productCode"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    category,                                  // Relación con ProductCategory
+                    rs.getDouble("purchasePrice"),
+                    rs.getDouble("salePrice"),
+                    rs.getInt("currentStock"),
+                    rs.getInt("minStock"),
+                    supplier,                                  // Relación con Supplier
+                    rs.getString("status"),
+                    rs.getTimestamp("createdAt"),
+                    rs.getTimestamp("updatedAt")
+                );
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener productos con bajo stock: " + e.getMessage());
+        }
+        return products;
+    }
 }

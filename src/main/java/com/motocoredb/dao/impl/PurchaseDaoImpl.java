@@ -8,6 +8,7 @@ import com.motocoredb.utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class PurchaseDaoImpl implements IPurchaseDao {
     private final Connection connection;
@@ -159,5 +160,73 @@ public class PurchaseDaoImpl implements IPurchaseDao {
         detail.setUnitPrice(rs.getDouble("unitPrice"));
         detail.setSubtotal(rs.getDouble("subtotal"));
         return detail;
+    }
+
+    @Override
+    public List<Purchase> findByDateRange(Date startDate, Date endDate) {
+        List<Purchase> purchases = new ArrayList<>();
+        String query = "SELECT * FROM Purchases WHERE purchaseDate BETWEEN ? AND ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setDate(1, new java.sql.Date(startDate.getTime()));
+            stmt.setDate(2, new java.sql.Date(endDate.getTime()));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Purchase purchase = new Purchase(
+                            rs.getInt("purchaseId"),
+                            rs.getString("invoiceNumber"),
+                            rs.getTimestamp("purchaseDate"),
+                            rs.getInt("supplierId"),
+                            rs.getInt("userId"),
+                            rs.getDouble("subtotal"),  // Cambio a getDouble()
+                            rs.getDouble("tax"),       // Cambio a getDouble()
+                            rs.getDouble("total"),     // Cambio a getDouble()
+                            rs.getString("status"),
+                            rs.getString("notes")
+                    );
+                    purchases.add(purchase);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener compras por rango de fechas: " + e.getMessage());
+        }
+        return purchases;
+    }
+
+    @Override
+    public String getSupplierNameByPurchaseId(int purchaseId) {
+        String query = "SELECT s.companyName FROM Suppliers s JOIN Purchases p ON s.supplierId = p.supplierId WHERE p.purchaseId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, purchaseId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("companyName"); // Usa companyName en lugar de name
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "Proveedor desconocido"; // Valor por defecto si no se encuentra el proveedor
+    }
+
+    @Override
+    public List<Purchase> listAllPurchases() {
+        String query = "SELECT * FROM Purchases";
+        List<Purchase> purchases = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Purchase purchase = new Purchase();
+                purchase.setPurchaseId(rs.getInt("purchaseId"));
+                purchase.setSupplierId(rs.getInt("supplierId"));
+                purchase.setTotal(rs.getDouble("total"));
+                purchase.setPurchaseDate(rs.getTimestamp("purchaseDate"));
+                purchases.add(purchase);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return purchases;
     }
 }

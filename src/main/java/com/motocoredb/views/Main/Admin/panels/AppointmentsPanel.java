@@ -1,10 +1,11 @@
 package com.motocoredb.views.Main.Admin.panels;
 
+import com.motocoredb.models.Customer;
 import com.motocoredb.models.WorkshopAppointment;
 import com.motocoredb.services.WorkshopService;
 import com.motocoredb.views.forms.appointments.AddAppointmentForm;
 import com.motocoredb.views.forms.appointments.EditAppointmentForm;
-import com.motocoredb.views.forms.utils.FormStyleManager;
+import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -92,17 +93,28 @@ public class AppointmentsPanel extends JPanel {
     private void loadWorkshopAppointment() {
         try {
             List<WorkshopAppointment> appointments = workshopService.getAllAppointments();
+            List<Customer> customers = workshopService.getAllCustomers(); // Obtener lista de clientes
             tableModel.setRowCount(0);
-
+    
             for (WorkshopAppointment a : appointments) {
+                // Buscar el nombre del cliente usando customerId
+                String customerName = customers.stream()
+                        .filter(c -> c.getCustomerId() == a.getCustomerId())
+                        .map(Customer::getNameOrCompany)
+                        .findFirst()
+                        .orElse("Cliente desconocido");
+    
+                // Simulación para obtener el nombre del usuario (reemplazar según lógica específica)
+                String userName = "Usuario " + a.getUserId(); // Puedes adaptar esto para obtener el nombre real del usuario desde un servicio o lista
+    
                 tableModel.addRow(new Object[]{
                         a.getAppointmentId(),
-                        "Cliente " + a.getCustomerId(), // Reemplazar con nombre real del cliente si está disponible
+                        customerName, // Mostrar el nombre del cliente en lugar del ID
                         a.getMotorcycleDescription(),
                         a.getMotorcyclePlate(),
                         a.getScheduledDate(),
                         a.getScheduledTime(),
-                        "Usuario " + a.getUserId(), // Reemplazar con nombre real del usuario si está disponible
+                        userName, // Mostrar el nombre del usuario si está disponible
                         a.getNotes()
                 });
             }
@@ -112,12 +124,16 @@ public class AppointmentsPanel extends JPanel {
     }
 
     private void showAddAppointmentForm() {
-        AddAppointmentForm form = new AddAppointmentForm(workshopService);
+        // Obtener la lista completa de clientes desde el servicio
+        List<Customer> customers = workshopService.getAllCustomers();
+    
+        // Crear el formulario con la lista de clientes
+        AddAppointmentForm form = new AddAppointmentForm(workshopService, customers);
         form.setVisible(true);
         form.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                loadWorkshopAppointment();
+                loadWorkshopAppointment(); // Recarga las citas al cerrar el formulario
             }
         });
     }
@@ -128,20 +144,25 @@ public class AppointmentsPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Seleccione una cita para editar.");
             return;
         }
-
+    
+        // Obtener el ID de la cita seleccionada
         int appointmentId = (int) tableModel.getValueAt(selectedRow, 0);
         WorkshopAppointment appointment = workshopService.getAppointmentById(appointmentId);
         if (appointment == null) {
             JOptionPane.showMessageDialog(this, "No se pudo obtener la cita.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        EditAppointmentForm form = new EditAppointmentForm(workshopService, appointment);
+    
+        // Obtener la lista completa de clientes desde el servicio
+        List<Customer> customers = workshopService.getAllCustomers();
+    
+        // Crear el formulario de edición y pasar la lista de clientes y la cita actual
+        EditAppointmentForm form = new EditAppointmentForm(workshopService, appointment, customers);
         form.setVisible(true);
         form.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                loadWorkshopAppointment();
+                loadWorkshopAppointment(); // Recarga las citas al cerrar el formulario
             }
         });
     }

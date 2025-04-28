@@ -1,4 +1,4 @@
-package com.motocoredb.views.forms.utils;
+package com.motocoredb.views.utils;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -156,6 +156,14 @@ public class FormStyleManager {
                 titledBorder,
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         );
+    }
+
+    public static void styleAsSector(JLabel label) {
+        label.setOpaque(true);
+        label.setBackground(PRIMARY_COLOR); // Usa el color principal del esquema
+        label.setFont(TITLE_FONT); // Usa una fuente definida en el estilo
+        label.setForeground(TEXT_COLOR); // Usa el color de texto
+        label.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     /**

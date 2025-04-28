@@ -3,8 +3,8 @@ package com.motocoredb.views.Main.Admin.panels;
 import com.motocoredb.models.Customer;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.views.forms.customers.EditCustomerForm;
+import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.views.forms.customers.AddCustomerForm;
-import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

@@ -8,11 +8,15 @@ import com.motocoredb.views.Main.navbar.Navbar;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.services.StaffService;
 import com.motocoredb.services.SupplierService;
+import com.motocoredb.services.UserService;
 import com.motocoredb.dao.impl.ProductDaoImpl;
 import com.motocoredb.services.CustomerService;
+import com.motocoredb.services.InventoryService;
 import com.motocoredb.dao.impl.CustomerDaoImpl;
+import com.motocoredb.dao.impl.InventoryDaoImpl;
 import com.motocoredb.dao.impl.StaffDaoImpl;
 import com.motocoredb.dao.impl.SupplierDaoImpl;
+import com.motocoredb.dao.impl.UserDaoImpl;
 import com.motocoredb.dao.impl.WorkshopDaoImpl;
 import com.motocoredb.services.WorkshopService;
 import com.motocoredb.services.SaleService;
@@ -59,19 +63,25 @@ public class AdminMainFrame extends JFrame {
         CustomerService customerService = new CustomerService(new CustomerDaoImpl());
         StaffService staffService = new StaffService(new StaffDaoImpl());
         SupplierService supplierService = new SupplierService(new SupplierDaoImpl());
-        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl());
+        WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl(), new CustomerDaoImpl());
+        UserService userService = new UserService(new UserDaoImpl());
         SaleService salesService = new SaleService(new SaleDaoImpl());
-
+        InventoryService inventoryService = new InventoryService(new InventoryDaoImpl());
+    
         // Agregar paneles al contenedor principal
         mainContentPanel.add(new InventoryPanel(productService), "Inventario");
         mainContentPanel.add(new CustomersPanel(customerService), "Clientes");
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
         mainContentPanel.add(new StaffPanel(staffService), "Empleados");
         mainContentPanel.add(new SupplierPanel(supplierService), "Proveedores");
-        mainContentPanel.add(new SalePanel(salesService, productService, customerService), "Ventas");
+        mainContentPanel.add(new SalePanel(salesService, productService, customerService, userService), "Ventas");
         mainContentPanel.add(new AppointmentsPanel(workshopService), "Citas");
-        //mainContentPanel.add(new ReportsPanel(salesService, productService), "Reportes"); // Nuevo módulo
-        //mainContentPanel.add(new AlertsPanel(productService), "Alertas"); // Nuevo módulo
+    
+        // Agregar ReportPanel con los servicios necesarios
+        mainContentPanel.add(new ReportPanel(salesService, inventoryService), "Reportes");
+    
+        // Opcional: Panel de alertas (comentado por ahora)
+        // mainContentPanel.add(new AlertsPanel(productService), "Alertas");
     }
 
     private JPanel createNavBar() {
@@ -79,7 +89,7 @@ public class AdminMainFrame extends JFrame {
             "Inventario", "Empleados", "Clientes", "Proveedores", "Ventas", "Citas", "Reportes", "Alertas", "Perfil"
         };
 
-        return new Navbar(opciones, this::cambiarPanel, this::cerrarSesion);
+        return new Navbar(opciones, this::cambiarPanel);
     }
 
     private JPanel createStatusBar() {

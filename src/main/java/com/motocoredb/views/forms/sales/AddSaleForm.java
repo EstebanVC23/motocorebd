@@ -6,9 +6,9 @@ import com.motocoredb.models.Customer;
 import com.motocoredb.models.Product;
 import com.motocoredb.services.SaleService;
 import com.motocoredb.utils.SessionManager;
+import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.services.ProductService;
-import com.motocoredb.views.forms.utils.FormStyleManager;
 
 import javax.swing.*;
 import java.awt.*;

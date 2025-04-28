@@ -14,7 +14,7 @@ import com.motocoredb.services.PurchaseService;
 import com.motocoredb.services.SupplierService;
 import com.motocoredb.views.forms.products.AddProductForm;
 import com.motocoredb.views.forms.products.EditProductForm;
-import com.motocoredb.views.forms.utils.FormStyleManager;
+import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.models.Supplier;
 
 import javax.swing.*;

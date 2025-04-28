@@ -3,6 +3,7 @@ package com.motocoredb.dao.interfaces;
 import com.motocoredb.models.InventoryMovement;
 import com.motocoredb.models.Product;
 import java.util.List;
+import java.util.Map;
 
 public interface IInventoryDao {
     /**
@@ -41,4 +42,53 @@ public interface IInventoryDao {
      * @return Cantidad disponible en inventario
      */
     int getCurrentStock(int productId);
+    
+    /**
+     * Obtiene el total de gastos por compras de inventario
+     * @return Total de gastos por compras de inventario
+     */
+    double getTotalIn();
+    
+    /**
+     * Obtiene el total de salidas de inventario al costo
+     * @return Total de salidas de inventario
+     */
+    double getTotalOut();
+    
+    /**
+     * Registra un movimiento de entrada de inventario (compra)
+     * @param productId ID del producto
+     * @param quantity Cantidad
+     * @param userId ID del usuario que registra
+     * @param referenceId ID de referencia (compra)
+     * @return true si se registró correctamente
+     */
+    boolean registerInMovement(int productId, int quantity, int userId, int referenceId);
+    
+    /**
+     * Registra un movimiento de salida de inventario (venta)
+     * @param productId ID del producto
+     * @param quantity Cantidad
+     * @param userId ID del usuario que registra
+     * @param referenceId ID de referencia (venta)
+     * @return true si se registró correctamente
+     */
+    boolean registerOutMovement(int productId, int quantity, int userId, int referenceId);
+    
+    /**
+     * Obtiene un mapa de productos con stock bajo
+     * @return Mapa con nombres de productos y su stock actual
+     */
+    Map<String, Integer> getLowStockProductsMap();
+    
+    /**
+     * Cierra la conexión a la base de datos
+     */
+    void closeConnection();
+
+    /**
+    * Obtiene el valor total de las compras en el inventario.
+    * @return El valor total de compras.
+    */
+    double getTotalPurchaseValue();
 }

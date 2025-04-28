@@ -72,13 +72,36 @@ public class CustomerDaoImpl implements ICustomerDao {
     }
 
     @Override
-    public List<Customer> listAll() {
+    public List<Customer> listAllAdmin() {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM Customers";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 customers.add(mapCustomer(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    @Override
+    public List<Customer> listAll() {
+        String query = "SELECT * FROM Customers WHERE status = 'Active'";
+        List<Customer> customers = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Customer customer = new Customer();
+                customer.setCustomerId(rs.getInt("customerId"));
+                customer.setNameOrCompany(rs.getString("nameOrCompany"));
+                customer.setIdentityDocument(rs.getString("identityDocument"));
+                customer.setAddress(rs.getString("address"));
+                customer.setPhone(rs.getString("phone"));
+                customer.setEmail(rs.getString("email"));
+                customer.setStatus(rs.getString("status"));
+                customers.add(customer);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,4 +138,5 @@ public class CustomerDaoImpl implements ICustomerDao {
             return false;
         }
     }
+
 }

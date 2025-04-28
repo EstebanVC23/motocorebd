@@ -12,4 +12,5 @@ public interface IProductDao {
     boolean changeStatus(int productId, String status);
     void reduceStock(int productId, int quantity);
     void increaseStock(int productId, int quantity);
+    List<Product> findLowStockProducts();
 }

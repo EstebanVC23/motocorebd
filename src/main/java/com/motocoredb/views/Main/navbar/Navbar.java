@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 public class Navbar extends JPanel {
     private NavButton activeButton;
 
-    public Navbar(String[] options, Consumer<String> navActionListener, Runnable logoutActionListener) {
+    public Navbar(String[] options, Consumer<String> navActionListener) {
         setLayout(new BorderLayout());
         setBackground(Colors.PRIMARY_BLUE);
         setBorder(BorderFactory.createCompoundBorder(
@@ -23,10 +23,6 @@ public class Navbar extends JPanel {
         // Panel de botones de navegación
         JPanel buttonsPanel = createButtonsPanel(navActionListener, options);
         add(buttonsPanel, BorderLayout.CENTER);
-
-        // Panel del botón de logout
-        JPanel rightPanel = createLogoutPanel(logoutActionListener);
-        add(rightPanel, BorderLayout.EAST);
     }
 
     private JPanel createLogoPanel() {
@@ -85,17 +81,6 @@ public class Navbar extends JPanel {
         }
 
         return buttonsPanel;
-    }
-
-    private JPanel createLogoutPanel(Runnable logoutActionListener) {
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
-        rightPanel.setBackground(Colors.PRIMARY_BLUE);
-
-        LogoutButton logoutButton = new LogoutButton("Cerrar Sesión");
-        logoutButton.addActionListener(e -> logoutActionListener.run());
-        rightPanel.add(logoutButton);
-
-        return rightPanel;
     }
 
     public void setActiveButton(NavButton button) {

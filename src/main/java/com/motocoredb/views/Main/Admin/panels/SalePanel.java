@@ -1,13 +1,16 @@
 package com.motocoredb.views.Main.Admin.panels;
 
+import com.motocoredb.models.Customer;
 import com.motocoredb.models.Product;
 import com.motocoredb.models.Sale;
 import com.motocoredb.models.SaleDetail;
+import com.motocoredb.models.User;
 import com.motocoredb.services.SaleService;
+import com.motocoredb.services.UserService;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.views.forms.sales.AddSaleForm;
 import com.motocoredb.views.forms.sales.EditSaleForm;
-import com.motocoredb.views.forms.utils.FormStyleManager;
+import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.services.CustomerService;
 
 import javax.swing.*;
@@ -22,11 +25,13 @@ public class SalePanel extends JPanel {
     private final SaleService saleService;
     private final ProductService productService;
     private final CustomerService customerService;
+    private final UserService userService;
 
     private JTable salesTable;
     private DefaultTableModel tableModel;
 
-    public SalePanel(SaleService saleService, ProductService productService, CustomerService customerService) {
+    public SalePanel(SaleService saleService, ProductService productService, CustomerService customerService, UserService userService) {
+        this.userService = userService; // Inicializar el servicio de usuarios
         this.saleService = saleService;
         this.productService = productService;
         this.customerService = customerService;
@@ -101,17 +106,51 @@ public class SalePanel extends JPanel {
     private void loadSales() {
         try {
             tableModel.setRowCount(0);
-
+    
+            // Obtener la lista de ventas con depuración
             List<Sale> sales = saleService.getSalesByDateRange(null, null);
+            System.out.println("Ventas obtenidas: " + sales.size());  // Depuración
+    
+            if (sales.isEmpty()) {
+                System.out.println("No se encontraron ventas en la base de datos");
+                return; // Si no hay ventas, terminamos aquí
+            }
+    
+            // Obtener todos los usuarios y clientes
+            List<User> users = userService.getAllUsers();
+            List<Customer> customers = customerService.getAllCustomers();
+    
             for (Sale sale : sales) {
-                String customerName = customerService.getCustomerById(sale.getCustomerId()).getNameOrCompany();
-                List<SaleDetail> details = saleService.getSaleDetails(sale.getSaleId()); // Obtén detalles de venta
-                String productName = details.isEmpty() ? "Sin productos" : productService.getProductById(details.get(0).getProductId()).getProductName();
-
+                // Buscar el nombre del cliente
+                String customerName = customers.stream()
+                        .filter(c -> c.getCustomerId() == sale.getCustomerId())
+                        .map(Customer::getNameOrCompany)
+                        .findFirst()
+                        .orElse("Cliente desconocido");
+    
+                // Buscar el nombre del usuario
+                String userName = users.stream()
+                        .filter(u -> u.getUserId() == sale.getUserId())
+                        .map(User::getUsername)
+                        .findFirst()
+                        .orElse("Usuario desconocido");
+    
+                // Obtener los detalles de la venta
+                List<SaleDetail> details = saleService.getSaleDetails(sale.getSaleId());
+                String productName = "Sin productos";
+                
+                if (details != null && !details.isEmpty()) {
+                    Product product = productService.getProductById(details.get(0).getProductId());
+                    if (product != null) {
+                        productName = product.getProductName();
+                    }
+                }
+    
+                // Agregar una fila a la tabla
                 tableModel.addRow(new Object[]{
                         sale.getSaleId(),
                         customerName,
-                        "Usuario " + sale.getUserId(),
+                        userName,
                         sale.getSaleDate(),
                         productName,
                         sale.getPaymentMethod(),
@@ -119,7 +158,13 @@ public class SalePanel extends JPanel {
                         sale.getStatus()
                 });
             }
+            
+            // Notificar cambios en el modelo de tabla
+            tableModel.fireTableDataChanged();
+            salesTable.repaint();
+            
         } catch (Exception e) {
+            e.printStackTrace(); // Para mostrar el stack trace completo
             JOptionPane.showMessageDialog(this, "Error al cargar ventas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -151,15 +196,15 @@ public class SalePanel extends JPanel {
                 return;
             }
     
-            // Obtener los detalles de la venta (incluyendo el producto y cantidad)
-            SaleDetail saleDetail = saleService.getSaleDetailBySaleId(saleId); // Método para obtener SaleDetail
-            if (saleDetail == null) {
+            // Obtener los detalles de la venta (usando getSaleDetails que devuelve una lista)
+            List<SaleDetail> saleDetails = saleService.getSaleDetails(saleId);
+            if (saleDetails == null || saleDetails.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "No se encontraron los detalles de la venta seleccionada.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
     
-            // Ajustar el constructor para incluir SaleDetail
-            EditSaleForm form = new EditSaleForm(saleService, customerService, productService, sale, saleDetail);
+            // Pasar el primer detalle o modificar EditSaleForm para manejar una lista
+            EditSaleForm form = new EditSaleForm(saleService, customerService, productService, sale, saleDetails.get(0));
             form.setVisible(true);
             form.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -168,6 +213,7 @@ public class SalePanel extends JPanel {
                 }
             });
         } catch (Exception e) {
+            e.printStackTrace(); // Añadir esto para ver el stack trace completo
             JOptionPane.showMessageDialog(this, "Error al obtener datos de la venta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

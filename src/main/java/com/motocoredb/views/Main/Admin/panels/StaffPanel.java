@@ -4,7 +4,7 @@ import com.motocoredb.models.Staff;
 import com.motocoredb.services.StaffService;
 import com.motocoredb.views.forms.staff.AddStaffForm;
 import com.motocoredb.views.forms.staff.EditStaffForm;
-import com.motocoredb.views.forms.utils.FormStyleManager;
+import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
