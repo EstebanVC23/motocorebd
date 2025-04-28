@@ -88,7 +88,7 @@ public class StaffDaoImpl implements IStaffDao {
     @Override
     public List<Staff> listAll() {
         List<Staff> staffList = new ArrayList<>();
-        String sql = "SELECT * FROM Staff WHERE status = 'Active'";
+        String sql = "SELECT * FROM Staff";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {

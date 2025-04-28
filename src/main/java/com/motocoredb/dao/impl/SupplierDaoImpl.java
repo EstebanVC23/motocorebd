@@ -80,7 +80,7 @@ public class SupplierDaoImpl implements ISupplierDao {
     @Override
     public List<Supplier> listAll() {
         List<Supplier> suppliers = new ArrayList<>();
-        String sql = "SELECT * FROM Suppliers WHERE status = 'Active'";
+        String sql = "SELECT * FROM Suppliers";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {

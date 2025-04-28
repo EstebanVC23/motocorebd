@@ -18,8 +18,9 @@ public class EditStaffForm extends StaffFormBase {
     private final Staff staff;
     private JTextField fullNameField;
     private JTextField identityDocumentField;
-    private JComboBox<String> positionCombo; // Cambiado a JComboBox
-    private JTextField specialtyField; // Texto libre para especialidad
+    private JComboBox<String> positionCombo;
+    private JComboBox<String> statusCombo;
+    private JTextField specialtyField;
     private JTextField phoneField;
     private JTextField emailField;
     private JTextField addressField;
@@ -102,33 +103,37 @@ public class EditStaffForm extends StaffFormBase {
     private void initializeFields() {
         fullNameField = FormStyleManager.createStyledTextField();
         fullNameField.setText(staff.getFullName());
-
+    
         // Campo de documento de identidad (solo números)
         identityDocumentField = FormStyleManager.createStyledTextField();
         identityDocumentField.setText(staff.getIdentityDocument());
         ((AbstractDocument) identityDocumentField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Restringir a números
-
+    
         // Crear JComboBox para "puesto"
         positionCombo = new JComboBox<>(new String[] { "Mecánico", "Vendedor", "Administrador" });
         positionCombo.setSelectedItem(staff.getPosition()); // Seleccionar el puesto actual
-
+    
+        // Crear JComboBox para estado
+        statusCombo = new JComboBox<>(new String[] { "Active", "Inactive" });
+        statusCombo.setSelectedItem(staff.getStatus()); // Seleccionar el estado actual
+    
         specialtyField = FormStyleManager.createStyledTextField(); // Campo libre para especialidad
         specialtyField.setText(staff.getSpecialty());
-
+    
         // Campo de teléfono (solo números)
         phoneField = FormStyleManager.createStyledTextField();
         phoneField.setText(staff.getPhone());
         ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Restringir a números
-
+    
         emailField = FormStyleManager.createStyledTextField();
         emailField.setText(staff.getEmail());
-
+    
         addressField = FormStyleManager.createStyledTextField();
         addressField.setText(staff.getAddress());
-
+    
         hireDateField = FormStyleManager.createStyledTextField();
         hireDateField.setToolTipText("Formato: yyyy-MM-dd");
-
+    
         if (staff.getHireDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             hireDateField.setText(sdf.format(staff.getHireDate()));
@@ -169,6 +174,9 @@ public class EditStaffForm extends StaffFormBase {
         gbc.gridy = 7;
         formPanel.add(FormStyleManager.createStyledLabel("Fecha de Contratación:"), gbc);
         
+        gbc.gridy = 8;
+        formPanel.add(FormStyleManager.createStyledLabel("Estado:"), gbc);
+        
         // Segunda columna (campos)
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -195,6 +203,9 @@ public class EditStaffForm extends StaffFormBase {
         
         gbc.gridy = 7;
         formPanel.add(hireDateField, gbc);
+        
+        gbc.gridy = 8;
+        formPanel.add(statusCombo, gbc);
     }
 
     private void setupButtons() {
@@ -224,6 +235,13 @@ public class EditStaffForm extends StaffFormBase {
             staff.setPhone(phoneField.getText());
             staff.setEmail(emailField.getText());
             staff.setAddress(addressField.getText());
+            
+            // Actualizar el estado del staff
+            if (statusCombo.getSelectedIndex() != -1) {
+                staff.setStatus((String) statusCombo.getSelectedItem());
+            } else {
+                throw new Exception("Debe seleccionar un estado.");
+            }
     
             // Convertir la fecha ingresada a java.sql.Date
             try {
