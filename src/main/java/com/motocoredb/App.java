@@ -1,6 +1,7 @@
 package com.motocoredb;
 
 import com.motocoredb.controllers.AuthController;
+import com.motocoredb.dao.impl.StaffDaoImpl;
 import com.motocoredb.dao.impl.UserDaoImpl;
 import com.motocoredb.services.AuthService;
 import com.motocoredb.utils.DBConnection;
@@ -54,9 +55,10 @@ public class App {
         try {
             // Initialize DAOs
             UserDaoImpl userDao = new UserDaoImpl();
+            StaffDaoImpl staffDao = new StaffDaoImpl();
             
             // Initialize Services
-            AuthService authService = new AuthService(userDao);
+            AuthService authService = new AuthService(userDao, staffDao);
             
             // Initialize Controllers
             AuthController authController = new AuthController(authService);

@@ -101,11 +101,13 @@ public class StaffDaoImpl implements IStaffDao {
     }
 
     @Override
-    public boolean updateStaff(Staff staff) {
-        String sql = "UPDATE Staff SET fullName = ?, identityDocument = ?, position = ?, " +
-                    "specialty = ?, phone = ?, email = ?, address = ?, hireDate = ?, status = ?, userId = ? " +
-                    "WHERE staffId = ?";
-
+    public boolean updateStaff(Staff staff) throws SQLException {
+        // Validar que el documento de identidad sea único
+        if (!isIdentityDocumentUnique(staff.getIdentityDocument(), staff.getStaffId())) {
+            throw new IllegalArgumentException("El documento de identidad ya está en uso por otro empleado.");
+        }
+    
+        String sql = "UPDATE Staff SET fullName = ?, identityDocument = ?, position = ?, specialty = ?, phone = ?, email = ?, address = ?, status = ? WHERE staffId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, staff.getFullName());
             stmt.setString(2, staff.getIdentityDocument());
@@ -114,18 +116,26 @@ public class StaffDaoImpl implements IStaffDao {
             stmt.setString(5, staff.getPhone());
             stmt.setString(6, staff.getEmail());
             stmt.setString(7, staff.getAddress());
-            stmt.setDate(8, staff.getHireDate()); // Asegurarse de actualizar la fecha de contratación
-            stmt.setString(9, staff.getStatus());
-            stmt.setInt(10, staff.getUserId());
-            stmt.setInt(11, staff.getStaffId());
-
-            return stmt.executeUpdate() > 0; // Verificar si se actualizó alguna fila
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            stmt.setString(8, staff.getStatus() != null ? staff.getStatus() : "Active");
+            stmt.setInt(9, staff.getStaffId());
+            return stmt.executeUpdate() > 0;
         }
     }
 
+    private boolean isIdentityDocumentUnique(String identityDocument, int staffId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Staff WHERE identityDocument = ? AND staffId != ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, identityDocument);
+            stmt.setInt(2, staffId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return false; // El valor no es único
+                }
+            }
+        }
+        return true; // El valor es único
+    }
+    
     @Override
     public boolean changeStatus(int id, String status) {
         String sql = "UPDATE Staff SET status = ? WHERE staffId = ?";
@@ -152,5 +162,39 @@ public class StaffDaoImpl implements IStaffDao {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public boolean updateUserIdForStaff(int staffId, int userId) {
+        String sql = "UPDATE Staff SET userId = ? WHERE staffId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, staffId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Staff findByIdentityDocument(String identityDocument) {
+        String sql = "SELECT * FROM Staff WHERE identityDocument = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, identityDocument);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapStaff(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Staff findById(int id) {
+        // This could simply call getById since they're identical
+        return getById(id);
     }
 }

@@ -2,6 +2,8 @@ package com.motocoredb.services;
 
 import com.motocoredb.dao.interfaces.ISupplierDao;
 import com.motocoredb.models.Supplier;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public class SupplierService {
@@ -12,7 +14,12 @@ public class SupplierService {
     }
     
     public boolean createSupplier(Supplier supplier) {
-        return supplierDao.createSupplier(supplier);
+        try {
+            return supplierDao.createSupplier(supplier); // Llama al método del DAO que lanza SQLException
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al crear el proveedor", e); // Envolver en una excepción más genérica si es necesario
+        }
     }
     
     public List<Supplier> getAllSuppliers() {

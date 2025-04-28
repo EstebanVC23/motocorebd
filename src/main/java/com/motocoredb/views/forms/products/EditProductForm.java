@@ -43,7 +43,7 @@ public class EditProductForm extends ProductFormBase {
 
     @Override
     protected void initializeUI() {
-        JPanel headerPanel = createHeaderPanel("Editar Producto: " + product.getProductCode(), "/icons/product_edit.png");
+        JPanel headerPanel = createHeaderPanel("Editar Producto: " + product.getProductCode());
         JPanel infoPanel = createInfoPanel();
 
         JPanel northPanel = new JPanel(new BorderLayout());

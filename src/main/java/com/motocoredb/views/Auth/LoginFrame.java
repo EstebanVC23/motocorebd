@@ -3,7 +3,8 @@ package com.motocoredb.views.Auth;
 import com.motocoredb.controllers.AuthController;
 import com.motocoredb.models.User;
 import com.motocoredb.utils.SessionManager;
-import com.motocoredb.views.Main.Admin.AdminMainFrame;
+import com.motocoredb.views.Main.AdminMainFrame;
+import com.motocoredb.views.Main.StaffMainFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -139,40 +140,72 @@ public class LoginFrame extends JFrame {
         add(panelDerecho);
     }
 
+    // Modifica la parte del evento del botón de login en la clase LoginFrame.java
+    // Reemplaza la sección dentro de configurarEventos() donde procesas el login
+
     private void configurarEventos() {
         botonLogin.addActionListener(e -> {
-        String username = campoUsuario.getText().trim();
-        String password = new String(campoPassword.getPassword()).trim();
+            String username = campoUsuario.getText().trim();
+            String password = new String(campoPassword.getPassword()).trim();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Por favor complete todos los campos", 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "Por favor complete todos los campos", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        User authenticatedUser = authController.login(username, password);
-        if (authenticatedUser != null) {
-            SessionManager.setSession(authenticatedUser); // Guarda el usuario logueado
-            dispose();
-            new AdminMainFrame(authenticatedUser, authController).setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, 
-                "Usuario o contraseña incorrectos", 
-                "Error de autenticación", 
-                JOptionPane.ERROR_MESSAGE);
-        }
-    });
+            // Realizamos el login a través del controlador
+            User authenticatedUser = authController.login(username, password);
+            
+            if (authenticatedUser != null) {
+                // Comprobamos el estado del usuario
+                if (!"Active".equals(authenticatedUser.getStatus())) {
+                    JOptionPane.showMessageDialog(this, 
+                        "El usuario está inactivo. Contacte al administrador.", 
+                        "Error de acceso", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                // Actualizamos la fecha del último inicio de sesión
+                java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
+                authenticatedUser.setLastLogin(currentTimestamp);
+                
+                // Actualizamos el lastLogin en la base de datos
+                boolean updated = authController.updateUserLastLogin(authenticatedUser.getUsername(), currentTimestamp);
+                if (!updated) {
+                    System.out.println("No se pudo actualizar el último inicio de sesión");
+                }
 
-        // Evento para el botón de registro
-        botonRegistro.addActionListener(e -> {
-            // Aquí deberías abrir la ventana de registro
-            // new RegisterFrame(authController).setVisible(true);
-            dispose();
+                // Guardamos la sesión del usuario utilizando el SessionManager
+                SessionManager.setSession(authenticatedUser);
+                
+                // Cerramos la ventana de login
+                dispose();
+                
+                // Redirigimos según el rol del usuario
+                String userRole = authenticatedUser.getRole();
+                if ("Administrador".equals(userRole)) {
+                    new AdminMainFrame(authenticatedUser, authController).setVisible(true);
+                } else {
+                    new StaffMainFrame(authenticatedUser, authController).setVisible(true);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Usuario o contraseña incorrectos", 
+                    "Error de autenticación", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
         });
 
-        // Evento para presionar Enter en los campos
+        botonRegistro.addActionListener(e -> {
+            dispose();
+            new RegisterFrame(authController).setVisible(true);
+        });
+
+        // Evento para presionar Enter en el campo de contraseña
         campoPassword.addActionListener(e -> botonLogin.doClick());
     }
 }

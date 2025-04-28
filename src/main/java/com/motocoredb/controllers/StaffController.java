@@ -2,7 +2,9 @@ package com.motocoredb.controllers;
 
 import com.motocoredb.models.Staff;
 import com.motocoredb.services.StaffService;
+
 import java.util.List;
+import java.sql.SQLException;
 
 public class StaffController {
     private final StaffService StaffService;
@@ -23,7 +25,7 @@ public class StaffController {
         return StaffService.getStaffById(id);
     }
 
-    public boolean updateStaff(Staff Staff) {
+    public boolean updateStaff(Staff Staff) throws SQLException {
         return StaffService.updateStaff(Staff);
     }
 

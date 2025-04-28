@@ -6,6 +6,7 @@ import com.motocoredb.utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SupplierDaoImpl implements ISupplierDao {
     private final Connection connection;
@@ -14,12 +15,13 @@ public class SupplierDaoImpl implements ISupplierDao {
         this.connection = DBConnection.getConnection();
     }
 
-    @Override
-    public boolean createSupplier(Supplier supplier) {
-        String sql = "INSERT INTO Suppliers (companyName, taxId, contactPerson, contactPhone, " +
-                    "contactEmail, address, status, createdAt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
-        
+    public boolean createSupplier(Supplier supplier) throws SQLException {
+        // Generar Tax ID automáticamente si no se proporciona
+        if (supplier.getTaxId() == null || supplier.getTaxId().isEmpty()) {
+            supplier.setTaxId(generateUniqueTaxId());
+        }
+    
+        String sql = "INSERT INTO Suppliers (companyName, taxId, contactPerson, contactPhone, contactEmail, address, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, supplier.getCompanyName());
             stmt.setString(2, supplier.getTaxId());
@@ -27,8 +29,10 @@ public class SupplierDaoImpl implements ISupplierDao {
             stmt.setString(4, supplier.getContactPhone());
             stmt.setString(5, supplier.getContactEmail());
             stmt.setString(6, supplier.getAddress());
-            stmt.setString(7, supplier.getStatus());
-            
+            stmt.setString(7, supplier.getStatus() != null ? supplier.getStatus() : "Active");
+    
+            System.out.println("Insertando proveedor con Tax ID: " + supplier.getTaxId());
+    
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -36,12 +40,11 @@ public class SupplierDaoImpl implements ISupplierDao {
                         supplier.setSupplierId(generatedKeys.getInt(1));
                     }
                 }
-                return true;
             }
-            return false;
+            return affectedRows > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            throw e;
         }
     }
 
@@ -138,5 +141,28 @@ public class SupplierDaoImpl implements ISupplierDao {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private String generateUniqueTaxId() throws SQLException {
+        String taxId;
+        boolean isUnique = false;
+    
+        do {
+            // Generar un Tax ID (puedes personalizar esta lógica)
+            taxId = UUID.randomUUID().toString().substring(0, 20); // Limitar a 20 caracteres
+    
+            // Verificar si el Tax ID ya existe en la base de datos
+            String checkSql = "SELECT COUNT(*) FROM Suppliers WHERE taxId = ?";
+            try (PreparedStatement stmt = connection.prepareStatement(checkSql)) {
+                stmt.setString(1, taxId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        isUnique = true; // No existe en la base de datos, es único
+                    }
+                }
+            }
+        } while (!isUnique);
+    
+        return taxId;
     }
 }

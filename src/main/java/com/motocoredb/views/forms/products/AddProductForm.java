@@ -49,7 +49,7 @@ public class AddProductForm extends ProductFormBase {
 
     @Override
     protected void initializeUI() {
-        JPanel headerPanel = createHeaderPanel("Agregar Nuevo Producto", "/icons/product_add.png");
+        JPanel headerPanel = createHeaderPanel("Agregar Nuevo Producto");
         formPanel = createFormPanel("Información del Producto");
 
         initializeFields();

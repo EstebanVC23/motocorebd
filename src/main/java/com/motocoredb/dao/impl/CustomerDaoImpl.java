@@ -24,7 +24,7 @@ public class CustomerDaoImpl implements ICustomerDao {
             stmt.setString(4, customer.getAddress());
             stmt.setString(5, customer.getPhone());
             stmt.setString(6, customer.getEmail());
-            stmt.setString(7, customer.getStatus());
+            stmt.setString(7, customer.getStatus() != null ? customer.getStatus() : "Active"); // Usar valor predeterminado si es nulo
             
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -91,17 +91,9 @@ public class CustomerDaoImpl implements ICustomerDao {
         String query = "SELECT * FROM Customers WHERE status = 'Active'";
         List<Customer> customers = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()) {
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Customer customer = new Customer();
-                customer.setCustomerId(rs.getInt("customerId"));
-                customer.setNameOrCompany(rs.getString("nameOrCompany"));
-                customer.setIdentityDocument(rs.getString("identityDocument"));
-                customer.setAddress(rs.getString("address"));
-                customer.setPhone(rs.getString("phone"));
-                customer.setEmail(rs.getString("email"));
-                customer.setStatus(rs.getString("status"));
-                customers.add(customer);
+                customers.add(mapCustomer(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -111,14 +103,15 @@ public class CustomerDaoImpl implements ICustomerDao {
 
     @Override
     public boolean updateCustomer(Customer customer) {
-        String sql = "UPDATE Customers SET nameOrCompany = ?, identityDocument = ?, address = ?, phone = ?, email = ? WHERE customerId = ?";
+        String sql = "UPDATE Customers SET nameOrCompany = ?, identityDocument = ?, address = ?, phone = ?, email = ?, status = ? WHERE customerId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, customer.getNameOrCompany());
             stmt.setString(2, customer.getIdentityDocument());
             stmt.setString(3, customer.getAddress());
             stmt.setString(4, customer.getPhone());
             stmt.setString(5, customer.getEmail());
-            stmt.setInt(6, customer.getCustomerId());
+            stmt.setString(6, customer.getStatus() != null ? customer.getStatus() : "Active"); // Usar valor predeterminado si es nulo
+            stmt.setInt(7, customer.getCustomerId());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

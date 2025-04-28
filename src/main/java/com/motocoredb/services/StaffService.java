@@ -2,6 +2,8 @@ package com.motocoredb.services;
 
 import com.motocoredb.dao.interfaces.IStaffDao;
 import com.motocoredb.models.Staff;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public class StaffService {
@@ -23,8 +25,8 @@ public class StaffService {
         return StaffDao.getById(id);
     }
     
-    public boolean updateStaff(Staff Staff) {
-        return StaffDao.updateStaff(Staff);
+    public boolean updateStaff(Staff staff) throws SQLException {
+        return StaffDao.updateStaff(staff);
     }
     
     public boolean deactivateStaff(int id) {

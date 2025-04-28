@@ -138,7 +138,7 @@ public class AddCustomerForm extends CustomerFormBase {
             newCustomer.setAddress(addressField.getText());
             newCustomer.setIdentityDocument(identityDocumentField.getText());
             newCustomer.setCustomerType((String) customerTypeCombo.getSelectedItem());
-            newCustomer.setStatus("Activo");
+            newCustomer.setStatus("Active");
 
             if (customerService.createCustomer(newCustomer)) {
                 FormStyleManager.showSuccessDialog(this, "Cliente agregado exitosamente");
