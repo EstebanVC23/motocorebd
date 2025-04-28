@@ -8,12 +8,15 @@ import com.motocoredb.models.Purchase;
 import com.motocoredb.models.PurchaseDetail;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.services.SupplierService;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.services.CategoryService;
 import com.motocoredb.services.InventoryService;
 import com.motocoredb.services.PurchaseService;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.Timestamp;
@@ -65,12 +68,19 @@ public class AddProductForm extends ProductFormBase {
         codeField = FormStyleManager.createStyledTextField();
         nameField = FormStyleManager.createStyledTextField();
         descriptionField = FormStyleManager.createStyledTextField();
+
         purchasePriceField = FormStyleManager.createStyledTextField();
+        ((AbstractDocument) purchasePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+
         salePriceField = FormStyleManager.createStyledTextField();
+        ((AbstractDocument) salePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+
         stockField = FormStyleManager.createStyledTextField();
+        ((AbstractDocument) stockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         minStockField = FormStyleManager.createStyledTextField();
-        minStockField.setText("5"); // Valor predeterminado
+        minStockField.setText("5");
+        ((AbstractDocument) minStockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         supplierCombo = new JComboBox<>();
         List<Supplier> suppliers = supplierService.getAllSuppliers();
@@ -88,6 +98,7 @@ public class AddProductForm extends ProductFormBase {
             return label;
         });
     }
+
 
     private void addFieldsToForm() {
         GridBagConstraints gbc = new GridBagConstraints();

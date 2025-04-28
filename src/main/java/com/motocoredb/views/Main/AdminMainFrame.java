@@ -1,6 +1,7 @@
 package com.motocoredb.views.Main;
 
 import com.motocoredb.controllers.AuthController;
+import com.motocoredb.models.Staff;
 import com.motocoredb.models.User;
 import com.motocoredb.views.Auth.LoginFrame;
 import com.motocoredb.views.Main.navbar.Navbar;
@@ -9,31 +10,17 @@ import com.motocoredb.services.ProductService;
 import com.motocoredb.services.StaffService;
 import com.motocoredb.services.SupplierService;
 import com.motocoredb.services.UserService;
-import com.motocoredb.dao.impl.ProductDaoImpl;
-import com.motocoredb.services.AlertService;
-import com.motocoredb.services.CategoryService;
-import com.motocoredb.services.CustomerService;
-import com.motocoredb.services.InventoryService;
-import com.motocoredb.dao.impl.AlertDaoImpl;
-import com.motocoredb.dao.impl.CustomerDaoImpl;
-import com.motocoredb.dao.impl.InventoryDaoImpl;
-import com.motocoredb.dao.impl.StaffDaoImpl;
-import com.motocoredb.dao.impl.SupplierDaoImpl;
-import com.motocoredb.dao.impl.UserDaoImpl;
-import com.motocoredb.dao.impl.WorkshopDaoImpl;
-import com.motocoredb.services.WorkshopService;
-import com.motocoredb.services.SaleService;
-import com.motocoredb.dao.impl.SaleDaoImpl;
-import com.motocoredb.dao.impl.CategoryDaoImpl;
-
+import com.motocoredb.dao.impl.*;
+import com.motocoredb.services.*;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
-
+import java.util.List;
 
 public class AdminMainFrame extends JFrame {
     private final AuthController authController;
     private final User usuario;
+    private StaffService staffService; // Declarar como atributo de clase
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
 
@@ -65,7 +52,7 @@ public class AdminMainFrame extends JFrame {
         // Inicializar servicios
         ProductService productService = new ProductService(new ProductDaoImpl());
         CustomerService customerService = new CustomerService(new CustomerDaoImpl());
-        StaffService staffService = new StaffService(new StaffDaoImpl());
+        staffService = new StaffService(new StaffDaoImpl()); // Asignar a la variable de clase
         SupplierService supplierService = new SupplierService(new SupplierDaoImpl());
         WorkshopService workshopService = new WorkshopService(new WorkshopDaoImpl(), new CustomerDaoImpl());
         UserService userService = new UserService(new UserDaoImpl());
@@ -125,9 +112,44 @@ public class AdminMainFrame extends JFrame {
     }
 
     private void cerrarSesion() {
-        authController.logout();
-        dispose();
-        new LoginFrame(authController).setVisible(true);
+        try {
+            if (usuario != null && usuario.getUsername() != null) {
+                boolean logoutSuccess = authController.updateLastLoginBeforeLogout(usuario.getUsername());
+                if (!logoutSuccess) {
+                    System.out.println("No se pudo actualizar la información de cierre de sesión");
+                }
+            }
+
+            boolean staffRefreshed = refreshStaffData();
+            if (!staffRefreshed) {
+                System.out.println("No se pudo refrescar la información de Staff en la base de datos");
+            }
+
+            authController.logout();
+            dispose();
+            new LoginFrame(authController).setVisible(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(
+                this,
+                "Error al cerrar sesión: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            dispose();
+            new LoginFrame(authController).setVisible(true);
+        }
+    }
+
+    private boolean refreshStaffData() {
+        try {
+            List<Staff> staffList = staffService.getAllStaffs(); // Utiliza el atributo staffService
+            System.out.println("Registros de Staff refrescados: " + staffList.size());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void showErrorDialog(String errorMessage) {

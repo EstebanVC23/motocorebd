@@ -2,9 +2,12 @@ package com.motocoredb.views.forms.suppliers;
 
 import com.motocoredb.models.Supplier;
 import com.motocoredb.services.SupplierService;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -37,11 +40,17 @@ public class AddSupplierForm extends SupplierFormBase {
 
     private void initializeFields() {
         nameField = FormStyleManager.createStyledTextField();
+
         contactField = FormStyleManager.createStyledTextField();
+
         phoneField = FormStyleManager.createStyledTextField();
+        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+
         emailField = FormStyleManager.createStyledTextField();
+
         addressField = FormStyleManager.createStyledTextField();
     }
+
 
     private void addFieldsToForm() {
         GridBagConstraints gbc = new GridBagConstraints();

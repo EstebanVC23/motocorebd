@@ -3,7 +3,6 @@ package com.motocoredb.dao.interfaces;
 import com.motocoredb.models.WorkshopAppointment;
 import com.motocoredb.models.AppointmentService;
 import com.motocoredb.models.Customer;
-import com.motocoredb.models.UsedProduct;
 
 import java.util.List;
 import java.util.Date;
@@ -17,8 +16,6 @@ public interface IWorkshopDao {
     boolean updateStatus(int appointmentId, String status);
 
     List<WorkshopAppointment> getByDate(String date);
-
-    boolean addUsedProducts(int appointmentId, List<UsedProduct> products);
 
     boolean deleteAppointment(int appointmentId);
 

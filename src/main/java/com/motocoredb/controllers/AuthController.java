@@ -8,6 +8,7 @@ import com.motocoredb.models.Staff;
 import com.motocoredb.models.User;
 import com.motocoredb.services.AuthService;
 import com.motocoredb.utils.DBConnection;
+import com.motocoredb.utils.SessionManager;
 
 public class AuthController {
     private final AuthService authService;
@@ -71,16 +72,6 @@ public class AuthController {
     }
     
     /**
-     * Cierra la sesión del usuario actual
-     */
-    public void logout() {
-        if (currentUser != null) {
-            authService.updateLastLogin(currentUser.getUserId());
-        }
-        this.currentUser = null;
-    }
-    
-    /**
      * Obtiene el usuario actual
      * 
      * @return Usuario actual o null si no hay sesión
@@ -110,5 +101,41 @@ public class AuthController {
             System.err.println("Error al actualizar la fecha de último inicio de sesión: " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Actualiza la fecha del último inicio de sesión del usuario antes de cerrar sesión
+     * Este método debe ser llamado antes de logout()
+     * 
+     * @param username Nombre de usuario
+     * @return true si la actualización fue exitosa, false en caso contrario
+     */
+    public boolean updateLastLoginBeforeLogout(String username) {
+        String sql = "UPDATE Users SET lastLogin = ? WHERE username = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            // Usamos la fecha y hora actual como último login
+            java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
+            
+            pstmt.setTimestamp(1, currentTimestamp);
+            pstmt.setString(2, username);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar la fecha de último inicio de sesión en logout: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Cierra la sesión del usuario actual
+     * No intenta actualizar la base de datos, solo limpia la sesión actual
+     */
+    public void logout() {
+        // Limpia la sesión actual sin intentar actualizar la base de datos
+        SessionManager.clearSession();
     }
 }

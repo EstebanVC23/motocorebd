@@ -2,9 +2,12 @@ package com.motocoredb.views.forms.staff;
 
 import com.motocoredb.models.Staff;
 import com.motocoredb.services.StaffService;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.text.ParseException;
@@ -99,34 +102,39 @@ public class EditStaffForm extends StaffFormBase {
     private void initializeFields() {
         fullNameField = FormStyleManager.createStyledTextField();
         fullNameField.setText(staff.getFullName());
-        
+
+        // Campo de documento de identidad (solo números)
         identityDocumentField = FormStyleManager.createStyledTextField();
         identityDocumentField.setText(staff.getIdentityDocument());
+        ((AbstractDocument) identityDocumentField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Restringir a números
 
         // Crear JComboBox para "puesto"
         positionCombo = new JComboBox<>(new String[] { "Mecánico", "Vendedor", "Administrador" });
         positionCombo.setSelectedItem(staff.getPosition()); // Seleccionar el puesto actual
-        
+
         specialtyField = FormStyleManager.createStyledTextField(); // Campo libre para especialidad
         specialtyField.setText(staff.getSpecialty());
-        
+
+        // Campo de teléfono (solo números)
         phoneField = FormStyleManager.createStyledTextField();
         phoneField.setText(staff.getPhone());
-        
+        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Restringir a números
+
         emailField = FormStyleManager.createStyledTextField();
         emailField.setText(staff.getEmail());
-        
+
         addressField = FormStyleManager.createStyledTextField();
         addressField.setText(staff.getAddress());
-        
+
         hireDateField = FormStyleManager.createStyledTextField();
         hireDateField.setToolTipText("Formato: yyyy-MM-dd");
-        
+
         if (staff.getHireDate() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             hireDateField.setText(sdf.format(staff.getHireDate()));
         }
     }
+
 
     private void addFieldsToForm() {
         GridBagConstraints gbc = new GridBagConstraints();

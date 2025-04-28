@@ -2,9 +2,12 @@ package com.motocoredb.views.forms.staff;
 
 import com.motocoredb.models.Staff;
 import com.motocoredb.services.StaffService;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.Date;
@@ -52,16 +55,21 @@ public class AddStaffForm extends StaffFormBase {
     private void initializeFields() {
         fullNameField = FormStyleManager.createStyledTextField();
         identityDocumentField = FormStyleManager.createStyledTextField();
+        ((AbstractDocument) identityDocumentField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         // Crear JComboBox para "puesto"
         positionCombo = new JComboBox<>(new String[] { "Mecánico", "Vendedor", "Administrador" });
         positionCombo.setSelectedIndex(-1); // Sin selección inicial
 
         specialtyField = FormStyleManager.createStyledTextField(); // Campo libre para especialidad
+
         phoneField = FormStyleManager.createStyledTextField();
+        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+
         emailField = FormStyleManager.createStyledTextField();
         addressField = FormStyleManager.createStyledTextField();
     }
+
 
     /**
      * Añade los campos al panel del formulario

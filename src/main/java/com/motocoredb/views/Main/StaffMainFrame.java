@@ -97,9 +97,33 @@ public class StaffMainFrame extends JFrame {
     }
 
     private void cerrarSesion() {
-        authController.logout();
-        dispose();
-        new LoginFrame(authController).setVisible(true);
+        try {
+            // Primero actualizamos el estado de la sesión en la base de datos
+            if (usuario != null && usuario.getUsername() != null) {
+                boolean logoutSuccess = authController.updateLastLoginBeforeLogout(usuario.getUsername());
+                if (!logoutSuccess) {
+                    System.out.println("No se pudo actualizar la información de cierre de sesión");
+                }
+            }
+            
+            // Luego realizamos el logout (que cierra conexiones, etc.)
+            authController.logout();
+            
+            // Finalmente cerramos la ventana actual y abrimos el login
+            dispose();
+            new LoginFrame(authController).setVisible(true);
+        } catch (Exception ex) {
+            // Manejar cualquier excepción para evitar un bloqueo de la aplicación
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error al cerrar sesión: " + ex.getMessage(),
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+            
+            // Si hay un error, intentamos forzar la salida al login de todos modos
+            dispose();
+            new LoginFrame(authController).setVisible(true);
+        }
     }
 
     private void showErrorDialog(String errorMessage) {

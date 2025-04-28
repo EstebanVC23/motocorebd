@@ -4,7 +4,6 @@ import com.motocoredb.dao.interfaces.IWorkshopDao;
 import com.motocoredb.models.WorkshopAppointment;
 import com.motocoredb.models.AppointmentService;
 import com.motocoredb.models.Customer;
-import com.motocoredb.models.UsedProduct;
 import com.motocoredb.utils.DBConnection;
 
 import java.sql.*;
@@ -45,8 +44,7 @@ public class WorkshopDaoImpl implements IWorkshopDao {
                         try (PreparedStatement serviceStmt = connection.prepareStatement(serviceQuery)) {
                             for (AppointmentService service : services) {
                                 serviceStmt.setInt(1, appointmentId);
-                                serviceStmt.setInt(2, service.getServiceId());
-                                serviceStmt.setDouble(3, service.getChargedPrice());
+                                serviceStmt.setDouble(2, service.getChargedPrice());
                                 serviceStmt.addBatch();
                             }
                             serviceStmt.executeBatch();
@@ -101,8 +99,7 @@ public int setStateOfAppointment(int appointmentId, String state) {
                 try (PreparedStatement serviceStmt = connection.prepareStatement(insertServiceQuery)) {
                     for (AppointmentService service : services) {
                         serviceStmt.setInt(1, appointment.getAppointmentId());
-                        serviceStmt.setInt(2, service.getServiceId());
-                        serviceStmt.setDouble(3, service.getChargedPrice());
+                        serviceStmt.setDouble(2, service.getChargedPrice());
                         serviceStmt.addBatch();
                     }
                     serviceStmt.executeBatch();
@@ -143,24 +140,6 @@ public int setStateOfAppointment(int appointmentId, String state) {
             e.printStackTrace();
         }
         return appointments;
-    }
-
-    @Override
-    public boolean addUsedProducts(int appointmentId, List<UsedProduct> products) {
-        String query = "INSERT INTO UsedProducts (appointmentId, productId, quantity) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            for (UsedProduct product : products) {
-                stmt.setInt(1, appointmentId);
-                stmt.setInt(2, product.getProductId());
-                stmt.setInt(3, product.getQuantity());
-                stmt.addBatch();
-            }
-            stmt.executeBatch();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     @Override
@@ -257,7 +236,6 @@ public int setStateOfAppointment(int appointmentId, String state) {
                     AppointmentService service = new AppointmentService(
                             rs.getInt("appointment_service_id"), // Map appointment_service_id
                             rs.getInt("appointment_id"),        // Map appointment_id
-                            rs.getInt("service_id"),            // Map service_id
                             rs.getDouble("charged_price"),      // Map charged_price
                             rs.getString("notes")               // Map notes
                     );

@@ -82,18 +82,6 @@ public class AddAppointmentForm extends AppointmentFormBase {
         addFormField("Fecha:", dateChooser, gbc, 5);
         addFormField("Hora:", timePicker, gbc, 6);
         addFormField("Notas:", new JScrollPane(notesArea), gbc, 7);
-
-        // Configuración mejorada para editar servicios
-        JButton editServiceButton = FormStyleManager.createSecondaryButton("Editar Servicios");
-        editServiceButton.addActionListener(e -> editServices());
-        gbc.gridy = 8;
-        formPanel.add(editServiceButton, gbc);
-
-        // Botón para agregar servicios
-        JButton addServiceButton = FormStyleManager.createSecondaryButton("Agregar Servicio");
-        addServiceButton.addActionListener(e -> addService());
-        gbc.gridy = 9;
-        formPanel.add(addServiceButton, gbc);
     }
 
     private void populateCustomerCombo() {
@@ -110,37 +98,6 @@ public class AddAppointmentForm extends AppointmentFormBase {
 
         gbc.gridx = 1;
         formPanel.add(field, gbc);
-    }
-
-    private void addService() {
-        String serviceName = JOptionPane.showInputDialog(this, "Ingrese el nombre del servicio:");
-        if (serviceName == null || serviceName.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El nombre del servicio no puede estar vacío.");
-            return;
-        }
-        double chargedPrice;
-        try {
-            chargedPrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Ingrese el precio del servicio:"));
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El precio ingresado es inválido.");
-            return;
-        }
-
-        AppointmentService service = new AppointmentService(0, 0, 0, chargedPrice, serviceName);
-        services.add(service);
-
-        JOptionPane.showMessageDialog(this, "Servicio agregado: " + serviceName);
-    }
-
-    private void editServices() {
-        // Diseño mejorado para editar servicios
-        JPanel servicePanel = new JPanel(new GridLayout(0, 1));
-        for (AppointmentService service : services) {
-            JLabel serviceLabel = new JLabel("Servicio: " + service.getNotes() + ", Precio: " + service.getChargedPrice());
-            servicePanel.add(serviceLabel);
-        }
-
-        JOptionPane.showMessageDialog(this, servicePanel, "Servicios Agregados", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 public class AppointmentService {
     private int appointmentServiceId;
     private int appointmentId;
-    private int serviceId;
     private double chargedPrice;
     private String notes;
 }

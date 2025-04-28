@@ -6,11 +6,14 @@ import com.motocoredb.models.ProductCategory;
 import com.motocoredb.models.InventoryMovement;
 import com.motocoredb.services.ProductService;
 import com.motocoredb.services.SupplierService;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.services.CategoryService;
 import com.motocoredb.services.InventoryService;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -105,15 +108,19 @@ public class EditProductForm extends ProductFormBase {
 
         purchasePriceField = FormStyleManager.createStyledTextField();
         purchasePriceField.setText(String.valueOf(product.getPurchasePrice()));
+        ((AbstractDocument) purchasePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         salePriceField = FormStyleManager.createStyledTextField();
         salePriceField.setText(String.valueOf(product.getSalePrice()));
+        ((AbstractDocument) salePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         stockField = FormStyleManager.createStyledTextField();
         stockField.setText(String.valueOf(product.getCurrentStock()));
+        ((AbstractDocument) stockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         minStockField = FormStyleManager.createStyledTextField();
         minStockField.setText(String.valueOf(product.getMinStock()));
+        ((AbstractDocument) minStockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
 
         supplierCombo = new JComboBox<>();
         List<Supplier> suppliers = supplierService.getAllSuppliers();
@@ -133,6 +140,7 @@ public class EditProductForm extends ProductFormBase {
             return label;
         });
     }
+
 
     private void addFieldsToForm() {
         GridBagConstraints gbc = new GridBagConstraints();

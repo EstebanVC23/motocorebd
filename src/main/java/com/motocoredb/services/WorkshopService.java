@@ -4,7 +4,6 @@ import com.motocoredb.dao.interfaces.IWorkshopDao;
 import com.motocoredb.models.WorkshopAppointment;
 import com.motocoredb.models.AppointmentService;
 import com.motocoredb.models.Customer;
-import com.motocoredb.models.UsedProduct;
 import com.motocoredb.dao.interfaces.ICustomerDao;
 
 import java.util.ArrayList;
@@ -53,15 +52,6 @@ public class WorkshopService {
         } catch (Exception e) {
             System.err.println("Error al obtener citas por fecha: " + e.getMessage());
             return null;
-        }
-    }
-
-    public boolean addUsedProducts(int appointmentId, List<UsedProduct> products) {
-        try {
-            return workshopDao.addUsedProducts(appointmentId, products);
-        } catch (Exception e) {
-            System.err.println("Error al agregar productos usados: " + e.getMessage());
-            return false;
         }
     }
 

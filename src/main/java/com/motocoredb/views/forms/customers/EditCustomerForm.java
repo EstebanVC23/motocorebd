@@ -2,9 +2,12 @@ package com.motocoredb.views.forms.customers;
 
 import com.motocoredb.models.Customer;
 import com.motocoredb.services.CustomerService;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -103,25 +106,28 @@ public class EditCustomerForm extends CustomerFormBase {
     private void initializeFields() {
         nameField = FormStyleManager.createStyledTextField();
         nameField.setText(customer.getNameOrCompany());
-        
+
         emailField = FormStyleManager.createStyledTextField();
         emailField.setText(customer.getEmail());
-        
+
         phoneField = FormStyleManager.createStyledTextField();
         phoneField.setText(customer.getPhone());
-        
+        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro de números
+
         addressField = FormStyleManager.createStyledTextField();
         addressField.setText(customer.getAddress());
-        
+
         identityDocumentField = FormStyleManager.createStyledTextField();
         identityDocumentField.setText(customer.getIdentityDocument());
-        
+        ((AbstractDocument) identityDocumentField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro de números
+
         customerTypeCombo = new JComboBox<>(new String[]{"Individual", "Corporativo"});
         customerTypeCombo.setFont(FormStyleManager.FIELD_FONT);
         customerTypeCombo.setBackground(new Color(245, 245, 245));
         customerTypeCombo.setBorder(new FormStyleManager.RoundedCornerBorder());
         customerTypeCombo.setSelectedItem(customer.getCustomerType());
     }
+
     
     /**
      * Añade los campos al panel del formulario

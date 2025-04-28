@@ -3,10 +3,13 @@ package com.motocoredb.views.forms.customers;
 import com.motocoredb.models.Customer;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.views.utils.FormStyleManager;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import javax.swing.text.AbstractDocument;
+
 
 public class AddCustomerForm extends CustomerFormBase {
     private JTextField nameField;
@@ -53,12 +56,17 @@ public class AddCustomerForm extends CustomerFormBase {
         phoneField = FormStyleManager.createStyledTextField();
         addressField = FormStyleManager.createStyledTextField();
         identityDocumentField = FormStyleManager.createStyledTextField();
-        
+    
+        // Agregar filtros para que solo se permitan números
+        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
+        ((AbstractDocument) identityDocumentField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
+    
         customerTypeCombo = new JComboBox<>(new String[]{"Individual", "Corporativo"});
         customerTypeCombo.setFont(FormStyleManager.FIELD_FONT);
         customerTypeCombo.setBackground(new Color(245, 245, 245));
         customerTypeCombo.setBorder(new FormStyleManager.RoundedCornerBorder());
     }
+    
     
     /**
      * Añade los campos al panel del formulario

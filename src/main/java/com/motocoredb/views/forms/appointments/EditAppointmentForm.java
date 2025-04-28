@@ -14,7 +14,6 @@ import com.github.lgooddatepicker.components.TimePicker;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.sql.Timestamp;
 
@@ -34,11 +33,11 @@ public class EditAppointmentForm extends AppointmentFormBase {
     private TimePicker timePicker;
 
     public EditAppointmentForm(WorkshopService workshopService, WorkshopAppointment appointment, List<Customer> customers) {
-        super("Editar Cita", 600, 800); // Tamaño y título del formulario
+        super("Editar Cita", 600, 800);
         this.workshopService = workshopService;
-        this.appointment = appointment; // Cita a editar
+        this.appointment = appointment;
         this.customers = customers;
-        this.services = workshopService.getAppointmentServices(appointment.getAppointmentId()); // Servicios asociados
+        this.services = workshopService.getAppointmentServices(appointment.getAppointmentId());
         initializeForm();
     }
 
@@ -48,7 +47,6 @@ public class EditAppointmentForm extends AppointmentFormBase {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Configuración del ComboBox de clientes
         customerCombo = new JComboBox<>();
         customerCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -63,21 +61,17 @@ public class EditAppointmentForm extends AppointmentFormBase {
         });
         populateCustomerCombo();
 
-        // Configuración de otros campos
         reasonField = FormStyleManager.createStyledTextField();
         motorcycleDescField = FormStyleManager.createStyledTextField();
         motorcyclePlateField = FormStyleManager.createStyledTextField();
         notesArea = new JTextArea(4, 20);
 
-        // Configuración del ComboBox de estado
         statusCombo = new JComboBox<>(new String[]{"Scheduled", "In progress", "Completed", "Cancelled"});
 
-        // Configuración de selectores de fecha y hora
         dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("yyyy-MM-dd");
         timePicker = new TimePicker();
 
-        // Agregar los campos al formulario
         addFormField("Cliente:", customerCombo, gbc, 0);
         addFormField("Razón de la visita:", reasonField, gbc, 1);
         addFormField("Descripción de motocicleta:", motorcycleDescField, gbc, 2);
@@ -87,24 +81,10 @@ public class EditAppointmentForm extends AppointmentFormBase {
         addFormField("Hora:", timePicker, gbc, 6);
         addFormField("Notas:", new JScrollPane(notesArea), gbc, 7);
 
-        // Configuración mejorada para editar servicios
-        JButton editServiceButton = FormStyleManager.createSecondaryButton("Editar Servicios");
-        editServiceButton.addActionListener(e -> editServices());
-        gbc.gridy = 8;
-        formPanel.add(editServiceButton, gbc);
-
-        // Botón para agregar servicios
-        JButton addServiceButton = FormStyleManager.createSecondaryButton("Agregar Servicio");
-        addServiceButton.addActionListener(e -> addService());
-        gbc.gridy = 9;
-        formPanel.add(addServiceButton, gbc);
-
-        // Cargar los datos de la cita existente
         loadAppointmentData();
     }
 
     private void loadAppointmentData() {
-        // Seleccionar el cliente correspondiente
         for (int i = 0; i < customerCombo.getItemCount(); i++) {
             Customer customer = customerCombo.getItemAt(i);
             if (customer.getCustomerId() == appointment.getCustomerId()) {
@@ -113,24 +93,19 @@ public class EditAppointmentForm extends AppointmentFormBase {
             }
         }
 
-        // Cargar los demás datos de la cita
         reasonField.setText(appointment.getVisitReason());
         motorcycleDescField.setText(appointment.getMotorcycleDescription());
         motorcyclePlateField.setText(appointment.getMotorcyclePlate());
         
-        // Seleccionar el estado correspondiente
         statusCombo.setSelectedItem(appointment.getStatus());
         
-        // Cargar fecha y hora
         dateChooser.setDate(appointment.getScheduledDate());
         
-        // Convertir java.sql.Time a LocalTime para el TimePicker
         if (appointment.getScheduledTime() != null) {
             LocalTime localTime = appointment.getScheduledTime().toLocalTime();
             timePicker.setTime(localTime);
         }
         
-        // Cargar notas
         notesArea.setText(appointment.getNotes());
     }
 
@@ -148,67 +123,6 @@ public class EditAppointmentForm extends AppointmentFormBase {
 
         gbc.gridx = 1;
         formPanel.add(field, gbc);
-    }
-
-    private void addService() {
-        String serviceName = JOptionPane.showInputDialog(this, "Ingrese el nombre del servicio:");
-        if (serviceName == null || serviceName.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El nombre del servicio no puede estar vacío.");
-            return;
-        }
-        double chargedPrice;
-        try {
-            chargedPrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Ingrese el precio del servicio:"));
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El precio ingresado es inválido.");
-            return;
-        }
-
-        AppointmentService service = new AppointmentService(0, appointment.getAppointmentId(), 0, chargedPrice, serviceName);
-        services.add(service);
-
-        JOptionPane.showMessageDialog(this, "Servicio agregado: " + serviceName);
-    }
-
-    private void editServices() {
-        if (services.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No hay servicios para editar.", "Sin servicios", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        
-        // Panel para mostrar y editar servicios
-        JPanel servicePanel = new JPanel(new GridLayout(0, 3, 10, 5));
-        servicePanel.add(new JLabel("Servicio", SwingConstants.CENTER));
-        servicePanel.add(new JLabel("Precio", SwingConstants.CENTER));
-        servicePanel.add(new JLabel("Acción", SwingConstants.CENTER));
-        
-        List<AppointmentService> servicesToRemove = new ArrayList<>();
-        
-        for (AppointmentService service : services) {
-            JLabel serviceLabel = new JLabel(service.getNotes());
-            JLabel priceLabel = new JLabel(String.format("%.2f", service.getChargedPrice()));
-            JButton removeButton = new JButton("Eliminar");
-            
-            removeButton.addActionListener(e -> {
-                servicesToRemove.add(service);
-                JOptionPane.showMessageDialog(this, "Servicio marcado para eliminación: " + service.getNotes());
-            });
-            
-            servicePanel.add(serviceLabel);
-            servicePanel.add(priceLabel);
-            servicePanel.add(removeButton);
-        }
-        
-        JScrollPane scrollPane = new JScrollPane(servicePanel);
-        scrollPane.setPreferredSize(new Dimension(400, 200));
-        
-        int result = JOptionPane.showConfirmDialog(this, scrollPane, "Editar Servicios", 
-                                                  JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        
-        if (result == JOptionPane.OK_OPTION && !servicesToRemove.isEmpty()) {
-            services.removeAll(servicesToRemove);
-            JOptionPane.showMessageDialog(this, "Servicios actualizados correctamente.");
-        }
     }
 
     @Override

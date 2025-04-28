@@ -8,12 +8,15 @@ import com.motocoredb.models.Customer;
 import com.motocoredb.models.Product;
 import com.motocoredb.services.SaleService;
 import com.motocoredb.utils.SessionManager;
+import com.motocoredb.views.forms.NumericDocumentFilter;
 import com.motocoredb.views.utils.FormStyleManager;
 import com.motocoredb.services.AlertService;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.services.ProductService;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -57,7 +60,6 @@ public class AddSaleForm extends SaleFormBase {
     }
 
     private void initializeFields() {
-        // Inicializar combo de clientes
         customerCombo = new JComboBox<>();
         customerService.getAllCustomers().forEach(customerCombo::addItem);
         customerCombo.setFont(FormStyleManager.FIELD_FONT);
@@ -73,7 +75,6 @@ public class AddSaleForm extends SaleFormBase {
             }
         });
 
-        // Inicializar combo de productos
         productCombo = new JComboBox<>();
         productService.getAllProducts().forEach(productCombo::addItem);
         productCombo.setFont(FormStyleManager.FIELD_FONT);
@@ -89,10 +90,10 @@ public class AddSaleForm extends SaleFormBase {
             }
         });
 
-        // Campo de cantidad
         quantityField = FormStyleManager.createStyledTextField();
         quantityField.setToolTipText("Ingrese la cantidad vendida");
         quantityField.setPreferredSize(new Dimension(300, 30));
+        ((AbstractDocument) quantityField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro
         quantityField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -100,19 +101,17 @@ public class AddSaleForm extends SaleFormBase {
             }
         });
 
-        // Campo de total
         totalField = FormStyleManager.createStyledTextField();
         totalField.setEditable(false);
         totalField.setBackground(new Color(240, 240, 240));
         totalField.setPreferredSize(new Dimension(300, 30));
         totalField.setToolTipText("Calculado automáticamente según cantidad y precio");
 
-        // Campo de descuento
         discountField = FormStyleManager.createStyledTextField();
         discountField.setToolTipText("Ingrese el descuento (opcional)");
         discountField.setPreferredSize(new Dimension(300, 30));
+        ((AbstractDocument) discountField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro
 
-        // Campo de notas
         notesField = new JTextArea();
         notesField.setLineWrap(true);
         notesField.setWrapStyleWord(true);
@@ -120,12 +119,12 @@ public class AddSaleForm extends SaleFormBase {
         notesField.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         notesField.setToolTipText("Ingrese notas adicionales (opcional)");
 
-        // Combo de métodos de pago
         paymentMethodCombo = new JComboBox<>(new String[]{"Cash", "Card", "Transfer", "Other"});
         paymentMethodCombo.setFont(FormStyleManager.FIELD_FONT);
         paymentMethodCombo.setPreferredSize(new Dimension(300, 30));
         paymentMethodCombo.setToolTipText("Seleccione el método de pago");
     }
+
 
     private void addFieldsToForm() {
         GridBagConstraints gbc = new GridBagConstraints();
