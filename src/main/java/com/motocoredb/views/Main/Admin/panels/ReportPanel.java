@@ -10,8 +10,8 @@ import java.awt.event.MouseWheelListener;
 import com.motocoredb.services.SaleService;
 import com.motocoredb.services.InventoryService;
 import com.motocoredb.views.Main.Admin.panels.charts.EmployeeSalesBarChart;
-import com.motocoredb.views.Main.Admin.panels.charts.SoldProductsBarChart;
 import com.motocoredb.views.Main.Admin.panels.charts.SalesOverTimeChart;
+import com.motocoredb.views.Main.Admin.panels.charts.SoldProductsBarChart;
 import com.motocoredb.views.utils.FormStyleManager;
 
 public class ReportPanel extends JPanel {

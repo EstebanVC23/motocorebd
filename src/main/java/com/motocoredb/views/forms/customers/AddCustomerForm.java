@@ -24,7 +24,7 @@ public class AddCustomerForm extends CustomerFormBase {
     @Override
     protected void initializeUI() {
         // Crear panel de encabezado
-        JPanel headerPanel = createHeaderPanel("Agregar Nuevo Cliente", "/icons/customer_add.png");
+        JPanel headerPanel = createHeaderPanel("Agregar Nuevo Cliente");
         
         // Crear panel de formulario
         formPanel = createFormPanel("Información del Cliente");
@@ -138,7 +138,7 @@ public class AddCustomerForm extends CustomerFormBase {
             newCustomer.setAddress(addressField.getText());
             newCustomer.setIdentityDocument(identityDocumentField.getText());
             newCustomer.setCustomerType((String) customerTypeCombo.getSelectedItem());
-            newCustomer.setStatus("Active");
+            newCustomer.setStatus("Activo");
 
             if (customerService.createCustomer(newCustomer)) {
                 FormStyleManager.showSuccessDialog(this, "Cliente agregado exitosamente");

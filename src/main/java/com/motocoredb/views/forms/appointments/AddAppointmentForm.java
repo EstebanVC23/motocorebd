@@ -2,7 +2,10 @@ package com.motocoredb.views.forms.appointments;
 
 import com.motocoredb.models.Customer;
 import com.motocoredb.models.WorkshopAppointment;
+import com.motocoredb.dao.impl.AlertDaoImpl;
+import com.motocoredb.models.Alert;
 import com.motocoredb.models.AppointmentService;
+import com.motocoredb.services.AlertService;
 import com.motocoredb.services.WorkshopService;
 import com.motocoredb.views.utils.FormStyleManager;
 import com.toedter.calendar.JDateChooser;
@@ -12,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class AddAppointmentForm extends AppointmentFormBase {
     private final WorkshopService workshopService;
@@ -146,19 +150,19 @@ public class AddAppointmentForm extends AppointmentFormBase {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             if (dateChooser.getDate() == null) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             // Obtener la hora desde el TimePicker
             String timeText = timePicker.getText();
             if (timeText == null || timeText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una hora.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             // Convertir la hora al formato de 24 horas
             java.sql.Time timeIn24Hours;
             try {
@@ -168,7 +172,7 @@ public class AddAppointmentForm extends AppointmentFormBase {
                 JOptionPane.showMessageDialog(this, "Formato de hora inválido. Asegúrese de usar correctamente el selector.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             // Configurar la cita
             WorkshopAppointment appointment = new WorkshopAppointment();
             Customer selectedCustomer = (Customer) customerCombo.getSelectedItem();
@@ -181,9 +185,31 @@ public class AddAppointmentForm extends AppointmentFormBase {
             appointment.setScheduledTime(timeIn24Hours); // Guardar la hora en formato de 24 horas
             appointment.setNotes(notesArea.getText());
             appointment.setUserId(1);
-    
+
             // Guardar la cita
             if (workshopService.createAppointment(appointment, services)) {
+                // Crear una alerta para la cita
+                try {
+                    AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+
+                    Alert newAlert = new Alert();
+                    newAlert.setAlertType("Upcoming appointment");
+                    newAlert.setMessage("Nueva cita agendada para el cliente '" + selectedCustomer.getNameOrCompany() +
+                                        "' con la motocicleta placa '" + appointment.getMotorcyclePlate() + "' el día " +
+                                        appointment.getScheduledDate());
+                    newAlert.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
+                    newAlert.setStatus("Pending");
+                    newAlert.setReferenceId(appointment.getAppointmentId()); // ID de la cita como referencia
+                    newAlert.setReferenceType("Appointment");
+
+                    boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                    if (!alertCreated) {
+                        JOptionPane.showMessageDialog(this, "Error al generar la alerta para la cita agendada.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception alertEx) {
+                    JOptionPane.showMessageDialog(this, "Error al procesar la alerta: " + alertEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
                 FormStyleManager.showSuccessDialog(this, "Cita agendada exitosamente.");
                 dispose();
             } else {

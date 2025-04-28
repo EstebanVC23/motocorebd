@@ -2,11 +2,14 @@ package com.motocoredb.views.forms.sales;
 
 import com.motocoredb.models.Sale;
 import com.motocoredb.models.SaleDetail;
+import com.motocoredb.dao.impl.AlertDaoImpl;
+import com.motocoredb.models.Alert;
 import com.motocoredb.models.Customer;
 import com.motocoredb.models.Product;
 import com.motocoredb.services.SaleService;
 import com.motocoredb.utils.SessionManager;
 import com.motocoredb.views.utils.FormStyleManager;
+import com.motocoredb.services.AlertService;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.services.ProductService;
 
@@ -200,37 +203,37 @@ public class AddSaleForm extends SaleFormBase {
     private void saveSale() {
         try {
             Sale sale = new Sale();
-    
+
             String invoiceNumber = "INV-" + System.currentTimeMillis();
             sale.setInvoiceNumber(invoiceNumber);
-    
+
             Customer customer = (Customer) customerCombo.getSelectedItem();
             sale.setCustomerId(customer.getCustomerId());
-    
+
             ZonedDateTime colombiaDateTime = ZonedDateTime.now(ZoneId.of("America/Bogota"));
             sale.setSaleDate(Timestamp.from(colombiaDateTime.toInstant()));
-    
+
             int userId = SessionManager.getCurrentUserId();
             sale.setUserId(userId);
-    
+
             sale.setPaymentMethod((String) paymentMethodCombo.getSelectedItem());
-    
+
             double subtotal = Double.parseDouble(totalField.getText());
             sale.setSubtotal(subtotal);
             double tax = subtotal * 0.19;
             sale.setTax(tax);
-    
+
             double discount = discountField.getText().isEmpty() ? 0.0 : Double.parseDouble(discountField.getText());
             sale.setDiscount(discount);
-    
+
             double total = subtotal + tax - discount;
             sale.setTotal(total);
-    
+
             String notes = notesField.getText().isEmpty() ? null : notesField.getText();
             sale.setNotes(notes);
-    
+
             sale.setStatus("Completed");
-    
+
             List<SaleDetail> saleDetails = new ArrayList<>();
             Product selectedProduct = (Product) productCombo.getSelectedItem();
             SaleDetail detail = new SaleDetail();
@@ -239,14 +242,33 @@ public class AddSaleForm extends SaleFormBase {
             detail.setUnitPrice(selectedProduct.getSalePrice());
             detail.setSubtotal(detail.getQuantity() * detail.getUnitPrice());
             saleDetails.add(detail);
-    
+
             if (saleService.createSale(sale, saleDetails)) {
                 customer.setPurchaseCount(customer.getPurchaseCount() + 1);
                 customerService.updateCustomer(customer);
-    
+
                 // Actualizar el stock del producto
                 productService.reduceStock(selectedProduct.getProductId(), detail.getQuantity());
-    
+
+                // Verificar si el stock baja al nivel mínimo o por debajo
+                int updatedStock = selectedProduct.getCurrentStock() - detail.getQuantity();
+                if (updatedStock <= selectedProduct.getMinStock()) {
+                    AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+                    
+                    Alert newAlert = new Alert();
+                    newAlert.setAlertType("Low stock");
+                    newAlert.setMessage("El producto '" + selectedProduct.getProductName() + "' ha alcanzado o bajado del nivel mínimo de stock.");
+                    newAlert.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
+                    newAlert.setStatus("Pending");
+                    newAlert.setReferenceId(selectedProduct.getProductId());
+                    newAlert.setReferenceType("Product");
+
+                    boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                    if (!alertCreated) {
+                        FormStyleManager.showErrorDialog(this, "Error al generar la alerta de bajo stock.");
+                    }
+                }
+
                 FormStyleManager.showSuccessDialog(this, "Venta registrada exitosamente.");
                 dispose();
             } else {

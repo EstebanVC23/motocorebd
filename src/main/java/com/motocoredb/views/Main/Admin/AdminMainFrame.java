@@ -11,6 +11,7 @@ import com.motocoredb.services.SupplierService;
 import com.motocoredb.services.UserService;
 import com.motocoredb.dao.impl.ProductDaoImpl;
 import com.motocoredb.services.AlertService;
+import com.motocoredb.services.CategoryService;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.services.InventoryService;
 import com.motocoredb.dao.impl.AlertDaoImpl;
@@ -23,6 +24,7 @@ import com.motocoredb.dao.impl.WorkshopDaoImpl;
 import com.motocoredb.services.WorkshopService;
 import com.motocoredb.services.SaleService;
 import com.motocoredb.dao.impl.SaleDaoImpl;
+import com.motocoredb.dao.impl.CategoryDaoImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,10 +71,11 @@ public class AdminMainFrame extends JFrame {
         UserService userService = new UserService(new UserDaoImpl());
         SaleService salesService = new SaleService(new SaleDaoImpl());
         InventoryService inventoryService = new InventoryService(new InventoryDaoImpl());
-        AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar AlertService
+        AlertService alertService = new AlertService(new AlertDaoImpl());
+        CategoryService categoryService = new CategoryService(new CategoryDaoImpl());
 
         // Agregar paneles al contenedor principal
-        mainContentPanel.add(new InventoryPanel(productService), "Inventario");
+        mainContentPanel.add(new InventoryPanel(productService, supplierService, categoryService), "Inventario");
         mainContentPanel.add(new CustomersPanel(customerService), "Clientes");
         mainContentPanel.add(new PerfilPanel(usuario), "Perfil");
         mainContentPanel.add(new StaffPanel(staffService), "Empleados");
@@ -82,7 +85,7 @@ public class AdminMainFrame extends JFrame {
         mainContentPanel.add(new ReportPanel(salesService, inventoryService), "Reportes");
 
         // Agregar AlertPanel
-        mainContentPanel.add(new AlertPanel(alertService, productService, workshopService), "Alertas");
+        mainContentPanel.add(new AlertPanel(alertService, workshopService), "Alertas");
     }
 
     private JPanel createNavBar() {

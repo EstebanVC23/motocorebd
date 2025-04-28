@@ -26,7 +26,7 @@ public class EditCustomerForm extends CustomerFormBase {
     @Override
     protected void initializeUI() {
         // Crear panel de encabezado
-        JPanel headerPanel = createHeaderPanel("Editar Cliente: " + customer.getNameOrCompany(), "/icons/customer_edit.png");
+        JPanel headerPanel = createHeaderPanel("Editar Cliente: " + customer.getNameOrCompany());
         
         // Panel de información del cliente
         JPanel infoPanel = createInfoPanel();
@@ -89,7 +89,7 @@ public class EditCustomerForm extends CustomerFormBase {
         JLabel statusLabel = new JLabel("Estado: " + customer.getStatus());
         statusLabel.setFont(FormStyleManager.FIELD_FONT);
         statusLabel.setForeground(
-            customer.getStatus().equalsIgnoreCase("Active") ? 
+            customer.getStatus().equalsIgnoreCase("Activo") ? 
             FormStyleManager.SUCCESS_COLOR : FormStyleManager.ERROR_COLOR
         );
         statsPanel.add(statusLabel);

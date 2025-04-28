@@ -2,10 +2,13 @@ package com.motocoredb.views.forms.sales;
 
 import com.motocoredb.models.Sale;
 import com.motocoredb.models.SaleDetail;
+import com.motocoredb.dao.impl.AlertDaoImpl;
+import com.motocoredb.models.Alert;
 import com.motocoredb.models.Customer;
 import com.motocoredb.models.Product;
 import com.motocoredb.services.SaleService;
 import com.motocoredb.views.utils.FormStyleManager;
+import com.motocoredb.services.AlertService;
 import com.motocoredb.services.CustomerService;
 import com.motocoredb.services.ProductService;
 
@@ -13,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class EditSaleForm extends SaleFormBase {
     private final CustomerService customerService;
@@ -137,15 +141,15 @@ public class EditSaleForm extends SaleFormBase {
         try {
             // Actualizar cliente
             sale.setCustomerId(((Customer) customerCombo.getSelectedItem()).getCustomerId());
-    
+
             // Cambiar estado
             String newStatus = (String) statusCombo.getSelectedItem();
             String oldStatus = sale.getStatus();
             sale.setStatus(newStatus);
-    
+
             // Actualizar notas
             sale.setNotes(notesField.getText().isEmpty() ? null : notesField.getText());
-    
+
             // Manejo del stock según el cambio de estado
             Product product = productService.getProductById(saleDetail.getProductId());
             if (product != null) {
@@ -155,9 +159,28 @@ public class EditSaleForm extends SaleFormBase {
                 } else if ("Cancelled".equals(oldStatus) && "Completed".equals(newStatus)) {
                     // Reducir stock
                     productService.reduceStock(product.getProductId(), saleDetail.getQuantity());
+
+                    // Verificar si el stock baja al nivel mínimo o por debajo
+                    int updatedStock = product.getCurrentStock() - saleDetail.getQuantity();
+                    if (updatedStock <= product.getMinStock()) {
+                        AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+
+                        Alert newAlert = new Alert();
+                        newAlert.setAlertType("Low stock");
+                        newAlert.setMessage("El producto '" + product.getProductName() + "' ha alcanzado o bajado del nivel mínimo de stock.");
+                        newAlert.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
+                        newAlert.setStatus("Pending");
+                        newAlert.setReferenceId(product.getProductId());
+                        newAlert.setReferenceType("Product");
+
+                        boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                        if (!alertCreated) {
+                            FormStyleManager.showErrorDialog(this, "Error al generar la alerta de bajo stock.");
+                        }
+                    }
                 }
             }
-    
+
             // Guardar cambios
             if (saleService.updateSale(sale)) {
                 FormStyleManager.showSuccessDialog(this, "Venta actualizada exitosamente.");

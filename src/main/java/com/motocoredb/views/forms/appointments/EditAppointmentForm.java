@@ -2,7 +2,10 @@ package com.motocoredb.views.forms.appointments;
 
 import com.motocoredb.models.Customer;
 import com.motocoredb.models.WorkshopAppointment;
+import com.motocoredb.dao.impl.AlertDaoImpl;
+import com.motocoredb.models.Alert;
 import com.motocoredb.models.AppointmentService;
+import com.motocoredb.services.AlertService;
 import com.motocoredb.services.WorkshopService;
 import com.motocoredb.views.utils.FormStyleManager;
 import com.toedter.calendar.JDateChooser;
@@ -13,6 +16,7 @@ import java.awt.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class EditAppointmentForm extends AppointmentFormBase {
     private final WorkshopService workshopService;
@@ -214,19 +218,19 @@ public class EditAppointmentForm extends AppointmentFormBase {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             if (dateChooser.getDate() == null) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             // Obtener la hora desde el TimePicker
             String timeText = timePicker.getText();
             if (timeText == null || timeText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una hora.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             // Convertir la hora al formato de 24 horas
             java.sql.Time timeIn24Hours;
             try {
@@ -236,20 +240,46 @@ public class EditAppointmentForm extends AppointmentFormBase {
                 JOptionPane.showMessageDialog(this, "Formato de hora inválido. Asegúrese de usar correctamente el selector.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    
+
             // Actualizar los datos de la cita existente
             Customer selectedCustomer = (Customer) customerCombo.getSelectedItem();
             appointment.setCustomerId(selectedCustomer.getCustomerId());
             appointment.setVisitReason(reasonField.getText().trim());
             appointment.setMotorcycleDescription(motorcycleDescField.getText().trim());
             appointment.setMotorcyclePlate(motorcyclePlateField.getText().trim());
-            appointment.setStatus((String) statusCombo.getSelectedItem());
+            String oldStatus = appointment.getStatus();
+            String newStatus = (String) statusCombo.getSelectedItem();
+            appointment.setStatus(newStatus);
             appointment.setScheduledDate(new java.sql.Date(dateChooser.getDate().getTime()));
             appointment.setScheduledTime(timeIn24Hours);
             appointment.setNotes(notesArea.getText());
-    
+
             // Guardar la cita actualizada
             if (workshopService.updateAppointment(appointment, services)) {
+                // Crear alerta si la cita se marca como "Programada" (Scheduled)
+                if ("Scheduled".equals(newStatus) && !"Scheduled".equals(oldStatus)) {
+                    try {
+                        AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+
+                        Alert newAlert = new Alert();
+                        newAlert.setAlertType("Upcoming appointment");
+                        newAlert.setMessage("La cita para el cliente '" + selectedCustomer.getNameOrCompany() +
+                                            "' con la motocicleta placa '" + appointment.getMotorcyclePlate() + "' fue actualizada para el día " +
+                                            appointment.getScheduledDate() + " a las " + timeIn24Hours + ".");
+                        newAlert.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
+                        newAlert.setStatus("Pending");
+                        newAlert.setReferenceId(appointment.getAppointmentId()); // ID de la cita como referencia
+                        newAlert.setReferenceType("Appointment");
+
+                        boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                        if (!alertCreated) {
+                            JOptionPane.showMessageDialog(this, "Error al generar la alerta para la cita actualizada.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception alertEx) {
+                        JOptionPane.showMessageDialog(this, "Error al procesar la alerta: " + alertEx.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
                 FormStyleManager.showSuccessDialog(this, "Cita actualizada exitosamente.");
                 dispose();
             } else {
