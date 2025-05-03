@@ -32,20 +32,32 @@ mvn clean install
 ```
 
 ### Configuración de la Base de Datos
-1. Cree una base de datos MySQL denominada `motocoredb`
-2. Ejecute el script de inicialización ubicado en `src/main/resources/sql/init_db.sql`
-3. Edite el archivo `config.properties` con las credenciales de acceso a su base de datos:
+1. La base de datos MySQL denominada `motocoredb` ya se encuentra incluida en el proyecto
+2. El archivo SQL completo está disponible en `src/main/resources/motocoredb.sql`
+3. Debe importar este archivo a MySQL Workbench para crear la estructura de la base de datos
+4. Edite el archivo `config.properties` con sus propias credenciales de acceso:
 ```
 db.url=jdbc:mysql://localhost:3306/motocoredb
 db.user=su_usuario
 db.password=su_contraseña
 ```
 
+Nota: Las contraseñas están encriptadas en la base de datos para mayor seguridad.
+
 ### Ejecución del Sistema
 ```bash
 mvn exec:java -Dexec.mainClass="com.motocoredb.App"
 ```
 Alternativamente, puede ejecutar la clase App desde su entorno de desarrollo integrado (IDE).
+
+## Credenciales de Prueba
+- **Usuario Maestro/Super Usuario**: 
+  - Usuario: `root`
+  - Contraseña: `1234`
+
+- **Vista de Vendedor**: 
+  - Para probar la vista de vendedor, primero debe crear un usuario empleado usando la cuenta de usuario maestro.
+  - Una vez creado el empleado, el sistema le proporcionará las credenciales correspondientes para acceder con este perfil.
 
 ## Primera Configuración
 Al iniciar la aplicación por primera vez, se recomienda:
@@ -126,7 +138,46 @@ motocoredb/
 │   │   │       ├── forms/    # Formularios específicos
 │   │   │       └── utils/    # Componentes reutilizables
 │   │   └── resources/        # Recursos estáticos
+│   │       └── motocoredb.sql # Archivo SQL de la base de datos
 │   └── test/                 # Pruebas unitarias
 ├── lib/                      # Bibliotecas externas
 └── config.properties         # Archivo de configuración
 ```
+
+## Declaración de Derechos de Uso
+Este proyecto se proporciona bajo la licencia MIT, lo que permite a otros estudiantes:
+- Utilizar el código como base para mejoras y extensiones
+- Estudiar la estructura y diseño para fines educativos
+- Implementar funcionalidades adicionales
+- Redistribuir versiones modificadas
+
+Se solicita únicamente la atribución adecuada al trabajo original.
+
+## Posibles Mejoras
+El sistema actual podría beneficiarse de las siguientes mejoras:
+
+### Mejoras de Diseño
+- Implementación de una interfaz más moderna con Material Design o JavaFX
+- Mejora de la experiencia de usuario con iconografía más intuitiva
+- Diseño responsive para adaptarse a diferentes resoluciones de pantalla
+- Temas oscuro/claro seleccionables por el usuario
+
+### Infraestructura
+- Migración de la base de datos a la nube (AWS RDS, Azure SQL o Google Cloud SQL)
+- Implementación de un sistema de respaldos automáticos
+- Arquitectura cliente-servidor para permitir múltiples usuarios simultáneos
+- Implementación de API REST para integración con aplicaciones móviles
+
+### Funcionalidades Adicionales
+- Sistema de notificaciones por correo electrónico para alertas de inventario
+- Implementación de SMS para recordatorios de citas a clientes
+- Integración con pasarelas de pago para cobros electrónicos
+- Módulo de facturación electrónica conforme a normativas locales
+- Dashboard analítico con KPIs relevantes para la gestión del taller
+
+### Optimización de Código
+- Refactorización para mejorar la reutilización de componentes
+- Optimización de consultas SQL para mejorar el rendimiento
+- Implementación de caché para consultas frecuentes
+- Mejora en el manejo de excepciones y logging
+- Implementación de tests automatizados con JUnit
