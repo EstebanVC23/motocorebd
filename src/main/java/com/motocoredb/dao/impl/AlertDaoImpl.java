@@ -8,13 +8,26 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementación de la interfaz IAlertDao para gestionar alertas en la base de datos.
+ * Proporciona métodos para crear, leer, actualizar y eliminar alertas.
+ */
 public class AlertDaoImpl implements IAlertDao {
     private final Connection connection;
 
+    /**
+     * Constructor que inicializa la conexión a la base de datos.
+     * @throws SQLException si ocurre un error al establecer la conexión.
+     */
     public AlertDaoImpl() throws SQLException {
         this.connection = DBConnection.getConnection();
     }
 
+    /**
+     * Obtiene una lista de alertas filtradas por estado.
+     * @param status el estado de las alertas a filtrar.
+     * @return una lista de alertas que coinciden con el estado proporcionado.
+     */
     @Override
     public List<Alert> getAlertsByStatus(String status) {
         List<Alert> alerts = new ArrayList<>();
@@ -31,6 +44,11 @@ public class AlertDaoImpl implements IAlertDao {
         return alerts;
     }
 
+    /**
+     * Obtiene una lista de alertas filtradas por tipo.
+     * @param type el tipo de las alertas a filtrar.
+     * @return una lista de alertas que coinciden con el tipo proporcionado.
+     */
     @Override
     public List<Alert> getAlertsByType(String type) {
         List<Alert> alerts = new ArrayList<>();
@@ -47,6 +65,12 @@ public class AlertDaoImpl implements IAlertDao {
         return alerts;
     }
 
+    /**
+     * Obtiene una lista de citas próximas ordenadas por fecha de generación.
+     *
+     * @return una lista de alertas correspondientes a citas próximas.
+     */
+
     @Override
     public List<Alert> getUpcomingAppointments() {
         List<Alert> alerts = new ArrayList<>();
@@ -62,6 +86,11 @@ public class AlertDaoImpl implements IAlertDao {
         return alerts;
     }
 
+   /**
+     * Obtiene una lista de todas las alertas de la base de datos.
+     *
+     * @return una lista de todas las alertas registradas.
+     */
     @Override
     public List<Alert> getAllAlerts() {
         List<Alert> alerts = new ArrayList<>();
@@ -77,6 +106,13 @@ public class AlertDaoImpl implements IAlertDao {
         return alerts;
     }
 
+    /**
+     * Actualiza el estado de una alerta específica.
+     *
+     * @param alertId el identificador de la alerta a actualizar.
+     * @param status el nuevo estado que se asignará a la alerta.
+     * @return true si la operación fue exitosa; false en caso contrario.
+     */
     @Override
     public boolean updateStatus(int alertId, String status) {
         String sql = "UPDATE Alerts SET status = ? WHERE alertId = ?";
@@ -89,6 +125,14 @@ public class AlertDaoImpl implements IAlertDao {
             return false;
         }
     }
+
+    /**
+     * Mapea un objeto ResultSet a una instancia de {@link Alert}.
+     *
+     * @param rs el ResultSet obtenido de la consulta.
+     * @return una instancia de {@link Alert} con los datos del ResultSet.
+     * @throws SQLException si ocurre un error al acceder a los datos del ResultSet.
+     */
 
     private Alert mapAlert(ResultSet rs) throws SQLException {
         return new Alert(
@@ -103,6 +147,13 @@ public class AlertDaoImpl implements IAlertDao {
         );
     }
 
+    /**
+     * Obtiene una alerta específica por su identificador.
+     *
+     * @param alertId el identificador de la alerta a obtener.
+     * @return una instancia de {@link Alert} si se encuentra; null en caso contrario.
+     */
+
     @Override
     public Alert getAlertById(int alertId) {
         String sql = "SELECT * FROM Alerts WHERE alertId = ?";
@@ -110,14 +161,20 @@ public class AlertDaoImpl implements IAlertDao {
             stmt.setInt(1, alertId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapAlert(rs); // Usa el método mapAlert para transformar el ResultSet en un objeto Alert
+                return mapAlert(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Retorna null si no se encuentra la alerta
+        return null;
     }
 
+    /**
+     * Crea una nueva alerta en la base de datos.
+     *
+     * @param alert la instancia de {@link Alert} a insertar en la base de datos.
+     * @return true si la operación fue exitosa; false en caso contrario.
+     */
     @Override
     public boolean createAlert(Alert alert) {
         String sql = "INSERT INTO Alerts (alertType, message, generatedAt, status, referenceId, referenceType) VALUES (?, ?, ?, ?, ?, ?)";

@@ -29,7 +29,7 @@ public class AlertService {
             case "Citas Próximas":
                 return alertDao.getUpcomingAppointments();
             default:
-                return alertDao.getAllAlerts(); // Retorna todas las alertas
+                return alertDao.getAllAlerts();
         }
     }
 
@@ -69,7 +69,7 @@ public class AlertService {
      * @return Objeto Alert correspondiente al ID, o null si no se encuentra.
      */
     public Alert getAlertById(int alertId) {
-        return alertDao.getAlertById(alertId); // Delegar al DAO
+        return alertDao.getAlertById(alertId);
     }
 
     /**
@@ -79,6 +79,6 @@ public class AlertService {
      * @return true si la operación fue exitosa.
      */
     public boolean createAlert(Alert alert) {
-        return alertDao.createAlert(alert); // Delegar al DAO
+        return alertDao.createAlert(alert);
 }
 }

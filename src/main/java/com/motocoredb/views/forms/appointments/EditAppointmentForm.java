@@ -138,24 +138,21 @@ public class EditAppointmentForm extends AppointmentFormBase {
                 return;
             }
 
-            // Obtener la hora desde el TimePicker
             String timeText = timePicker.getText();
             if (timeText == null || timeText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una hora.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Convertir la hora al formato de 24 horas
             java.sql.Time timeIn24Hours;
             try {
-                java.time.LocalTime localTime = timePicker.getTime(); // Obtener el tiempo como LocalTime directamente del TimePicker
-                timeIn24Hours = java.sql.Time.valueOf(localTime); // Convertir LocalTime a Time
+                java.time.LocalTime localTime = timePicker.getTime();
+                timeIn24Hours = java.sql.Time.valueOf(localTime);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Formato de hora inválido. Asegúrese de usar correctamente el selector.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Actualizar los datos de la cita existente
             Customer selectedCustomer = (Customer) customerCombo.getSelectedItem();
             appointment.setCustomerId(selectedCustomer.getCustomerId());
             appointment.setVisitReason(reasonField.getText().trim());
@@ -168,12 +165,10 @@ public class EditAppointmentForm extends AppointmentFormBase {
             appointment.setScheduledTime(timeIn24Hours);
             appointment.setNotes(notesArea.getText());
 
-            // Guardar la cita actualizada
             if (workshopService.updateAppointment(appointment, services)) {
-                // Crear alerta si la cita se marca como "Programada" (Scheduled)
                 if ("Scheduled".equals(newStatus) && !"Scheduled".equals(oldStatus)) {
                     try {
-                        AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+                        AlertService alertService = new AlertService(new AlertDaoImpl());
 
                         Alert newAlert = new Alert();
                         newAlert.setAlertType("Upcoming appointment");
@@ -182,10 +177,10 @@ public class EditAppointmentForm extends AppointmentFormBase {
                                             appointment.getScheduledDate() + " a las " + timeIn24Hours + ".");
                         newAlert.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
                         newAlert.setStatus("Pending");
-                        newAlert.setReferenceId(appointment.getAppointmentId()); // ID de la cita como referencia
+                        newAlert.setReferenceId(appointment.getAppointmentId());
                         newAlert.setReferenceType("Appointment");
 
-                        boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                        boolean alertCreated = alertService.createAlert(newAlert);
                         if (!alertCreated) {
                             JOptionPane.showMessageDialog(this, "Error al generar la alerta para la cita actualizada.", "Error", JOptionPane.ERROR_MESSAGE);
                         }

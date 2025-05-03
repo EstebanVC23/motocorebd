@@ -7,10 +7,10 @@ import com.motocoredb.views.utils.FormStyleManager;
 import java.awt.*;
 
 public abstract class AppointmentFormBase extends JFrame {
-    protected JPanel mainPanel; // Panel principal
-    protected JPanel formPanel; // Panel del formulario
-    protected JPanel buttonPanel; // Panel de botones
-    protected JPanel headerPanel; // Panel del encabezado
+    protected JPanel mainPanel;
+    protected JPanel formPanel;
+    protected JPanel buttonPanel;
+    protected JPanel headerPanel;
 
     protected AppointmentFormBase(String title, int width, int height) {
         setTitle(title);
@@ -36,7 +36,6 @@ public abstract class AppointmentFormBase extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    // Método abstracto para inicializar elementos específicos del formulario
     protected abstract void initializeForm();
 
     protected JPanel createHeaderPanel() {
@@ -71,7 +70,6 @@ public abstract class AppointmentFormBase extends JFrame {
         return buttonPanel;
     }
 
-    // Métodos abstractos para las acciones de botones
     protected abstract void onSave();
 
     protected abstract void onCancel();

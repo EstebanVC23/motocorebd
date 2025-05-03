@@ -47,7 +47,7 @@ public class AddSaleForm extends SaleFormBase {
 
     @Override
     protected void initializeUI() {
-        JPanel headerPanel = createHeaderPanel("Registrar Nueva Venta", "/icons/sale_add.png");
+        JPanel headerPanel = createHeaderPanel("Registrar Nueva Venta");
         formPanel = createFormPanel("Detalles de la Venta");
 
         initializeFields();
@@ -93,7 +93,7 @@ public class AddSaleForm extends SaleFormBase {
         quantityField = FormStyleManager.createStyledTextField();
         quantityField.setToolTipText("Ingrese la cantidad vendida");
         quantityField.setPreferredSize(new Dimension(300, 30));
-        ((AbstractDocument) quantityField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro
+        ((AbstractDocument) quantityField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
         quantityField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -110,7 +110,7 @@ public class AddSaleForm extends SaleFormBase {
         discountField = FormStyleManager.createStyledTextField();
         discountField.setToolTipText("Ingrese el descuento (opcional)");
         discountField.setPreferredSize(new Dimension(300, 30));
-        ((AbstractDocument) discountField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro
+        ((AbstractDocument) discountField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         notesField = new JTextArea();
         notesField.setLineWrap(true);
@@ -246,13 +246,11 @@ public class AddSaleForm extends SaleFormBase {
                 customer.setPurchaseCount(customer.getPurchaseCount() + 1);
                 customerService.updateCustomer(customer);
 
-                // Actualizar el stock del producto
                 productService.reduceStock(selectedProduct.getProductId(), detail.getQuantity());
 
-                // Verificar si el stock baja al nivel mínimo o por debajo
                 int updatedStock = selectedProduct.getCurrentStock() - detail.getQuantity();
                 if (updatedStock <= selectedProduct.getMinStock()) {
-                    AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+                    AlertService alertService = new AlertService(new AlertDaoImpl());
                     
                     Alert newAlert = new Alert();
                     newAlert.setAlertType("Low stock");
@@ -262,7 +260,7 @@ public class AddSaleForm extends SaleFormBase {
                     newAlert.setReferenceId(selectedProduct.getProductId());
                     newAlert.setReferenceType("Product");
 
-                    boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                    boolean alertCreated = alertService.createAlert(newAlert);
                     if (!alertCreated) {
                         FormStyleManager.showErrorDialog(this, "Error al generar la alerta de bajo stock.");
                     }

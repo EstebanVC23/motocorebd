@@ -33,10 +33,10 @@ public class PurchaseService {
 
     public List<Purchase> getPurchasesByDateRange(Date startDate, Date endDate) {
         try {
-            return purchaseDao.findByDateRange(startDate, endDate); // Delegamos la consulta al DAO
+            return purchaseDao.findByDateRange(startDate, endDate);
         } catch (Exception e) {
             System.err.println("Error al obtener compras por rango de fechas: " + e.getMessage());
-            return new ArrayList<>(); // Retorna una lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 
@@ -45,6 +45,6 @@ public class PurchaseService {
     }
 
     public List<Purchase> getAllPurchases() {
-        return purchaseDao.listAllPurchases(); // Método en el DAO para consultar todas las compras
+        return purchaseDao.listAllPurchases();
     }
 }

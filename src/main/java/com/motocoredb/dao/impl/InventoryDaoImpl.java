@@ -12,9 +12,13 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
+/**
+ * Implementación de la interfaz IInventoryDao para manejar operaciones de inventario 
+ */
 public class InventoryDaoImpl implements IInventoryDao {
     private Connection connection;
 
+    
     public InventoryDaoImpl() {
         try {
             this.connection = DBConnection.getConnection();
@@ -24,6 +28,12 @@ public class InventoryDaoImpl implements IInventoryDao {
         }
     }
 
+    /**
+     * Obtiene una lista de movimientos de inventario para un producto específico
+     * 
+     * @param productId ID del producto
+     * @return Lista de movimientos de inventario
+     */
     @Override
     public List<InventoryMovement> getMovements(int productId) {
         List<InventoryMovement> movements = new ArrayList<>();
@@ -41,6 +51,15 @@ public class InventoryDaoImpl implements IInventoryDao {
         return movements;
     }
 
+    /**
+     * Ajusta el inventario de un producto
+     * 
+     * @param productId ID del producto
+     * @param quantity Cantidad a ajustar (puede ser negativa)
+     * @param notes Notas del ajuste
+     * @param userId ID del usuario que realiza el ajuste
+     * @return true si se ajustó correctamente, false en caso contrario
+     */
     @Override
     public boolean adjustInventory(int productId, int quantity, String notes, int userId) {
         Connection conn = null;
@@ -65,7 +84,6 @@ public class InventoryDaoImpl implements IInventoryDao {
                 stmt.executeUpdate();
             }
 
-            // Verificar si el stock bajó del mínimo
             if (quantity < 0) {
                 checkLowStock(productId);
             }
@@ -95,6 +113,11 @@ public class InventoryDaoImpl implements IInventoryDao {
         }
     }
 
+    /**
+     * Obtiene una lista de productos con stock bajo
+     * 
+     * @return Lista de productos con stock bajo
+     */
     @Override
     public List<Product> getLowStockProducts() {
         List<Product> products = new ArrayList<>();
@@ -117,6 +140,12 @@ public class InventoryDaoImpl implements IInventoryDao {
         return products;
     }
 
+    /**
+     * Registra un movimiento de inventario
+     * 
+     * @param movement Movimiento a registrar
+     * @return true si se registró correctamente, false en caso contrario
+     */
     @Override
     public boolean recordMovement(InventoryMovement movement) {
         String sql = "INSERT INTO InventoryMovements (productId, movementType, quantity, userId, referenceId, referenceType, notes) " +
@@ -137,6 +166,12 @@ public class InventoryDaoImpl implements IInventoryDao {
         }
     }
 
+    /**
+     * Obtiene el stock actual de un producto
+     * 
+     * @param productId ID del producto
+     * @return Stock actual del producto
+     */
     @Override
     public int getCurrentStock(int productId) {
         String sql = "SELECT currentStock FROM Products WHERE productId = ?";
@@ -150,7 +185,7 @@ public class InventoryDaoImpl implements IInventoryDao {
             JOptionPane.showMessageDialog(null, "Error al obtener stock actual: " + e.getMessage(), 
                     "Error de consulta", JOptionPane.ERROR_MESSAGE);
         }
-        return 0; // Retorna 0 si hay error o no encuentra el producto
+        return 0;
     }
 
     /**
@@ -268,8 +303,7 @@ public class InventoryDaoImpl implements IInventoryDao {
             pstmt.setInt(4, referenceId);
             
             int result = pstmt.executeUpdate();
-            
-            // Actualizar el stock del producto
+
             if (result > 0) {
                 updateProductStock(productId, quantity, false);
                 return true;
@@ -297,7 +331,6 @@ public class InventoryDaoImpl implements IInventoryDao {
             pstmt.setInt(2, productId);
             pstmt.executeUpdate();
             
-            // Verificar si el stock bajó del mínimo y generar alerta
             if (!isAddition) {
                 checkLowStock(productId);
             }
@@ -326,13 +359,11 @@ public class InventoryDaoImpl implements IInventoryDao {
                     String name = rs.getString("name");
                     
                     if (currentStock <= minStock) {
-                        // Generar alerta de stock bajo
                         createLowStockAlert(productId, name, currentStock, minStock);
                     }
                 }
             }
         } catch (SQLException e) {
-            // Manejar error silenciosamente - no interrumpir operación principal
             System.err.println("Error al verificar stock bajo: " + e.getMessage());
         }
     }
@@ -356,7 +387,6 @@ public class InventoryDaoImpl implements IInventoryDao {
             pstmt.executeUpdate();
             
         } catch (SQLException e) {
-            // Manejar error silenciosamente
             System.err.println("Error al crear alerta de stock bajo: " + e.getMessage());
         }
     }

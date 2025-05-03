@@ -10,9 +10,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementación de la interfaz IProductDao para gestionar productos en la base de datos.
+ * Proporciona métodos para crear, leer, actualizar y eliminar productos.
+ */
 public class ProductDaoImpl implements IProductDao {
     private final Connection connection;
 
+    /**
+     * Constructor que inicializa la conexión a la base de datos.
+     * @throws SQLException si ocurre un error al establecer la conexión.
+     */
     public ProductDaoImpl() throws SQLException {
         this.connection = DBConnection.getConnection();
     }
@@ -29,12 +37,12 @@ public class ProductDaoImpl implements IProductDao {
             stmt.setString(1, product.getProductCode());
             stmt.setString(2, product.getProductName());
             stmt.setString(3, product.getDescription());
-            stmt.setInt(4, product.getCategory().getCategoryId()); // Obtener el ID de la categoría
+            stmt.setInt(4, product.getCategory().getCategoryId());
             stmt.setDouble(5, product.getPurchasePrice());
             stmt.setDouble(6, product.getSalePrice());
             stmt.setInt(7, product.getCurrentStock());
             stmt.setInt(8, product.getMinStock());
-            stmt.setInt(9, product.getSupplier().getSupplierId()); // Obtener el ID del proveedor
+            stmt.setInt(9, product.getSupplier().getSupplierId()); 
             stmt.setString(10, product.getStatus());
 
             int affectedRows = stmt.executeUpdate();
@@ -99,23 +107,23 @@ public class ProductDaoImpl implements IProductDao {
             rs.getInt("categoryId"),
             rs.getString("categoryName"),
             rs.getString("categoryDescription"),
-            null // El estado puede omitirse si no se necesita aquí
+            null
         );
 
         Supplier supplier = new Supplier(
-            rs.getInt("supplierId"), // ID del proveedor
-            rs.getString("companyName"), // Nombre de la empresa
-            "", // taxId: No lo estás obteniendo, así que ponemos una cadena vacía
-            rs.getString("contactPerson"), // Persona de contacto
-            rs.getString("contactPhone"), // Teléfono de contacto
-            rs.getString("contactEmail"), // Correo de contacto
-            rs.getString("address"), // Dirección
-            "Active", // Estado: Puedes poner un valor por defecto si no lo obtienes
-            null // createdAt: Valor por defecto (puedes ajustarlo según tus necesidades)
+            rs.getInt("supplierId"),
+            rs.getString("companyName"),
+            "",
+            rs.getString("contactPerson"),
+            rs.getString("contactPhone"),
+            rs.getString("contactEmail"),
+            rs.getString("address"),
+            "Active",
+            null
         );
 
-        product.setCategory(category); // Relación con ProductCategory
-        product.setSupplier(supplier); // Relación con Supplier
+        product.setCategory(category);
+        product.setSupplier(supplier);
 
         return product;
     }
@@ -155,12 +163,12 @@ public class ProductDaoImpl implements IProductDao {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getDescription());
-            stmt.setInt(3, product.getCategory().getCategoryId()); // Obtener el ID de la categoría
+            stmt.setInt(3, product.getCategory().getCategoryId());
             stmt.setDouble(4, product.getPurchasePrice());
             stmt.setDouble(5, product.getSalePrice());
             stmt.setInt(6, product.getCurrentStock());
             stmt.setInt(7, product.getMinStock());
-            stmt.setInt(8, product.getSupplier().getSupplierId()); // Obtener el ID del proveedor
+            stmt.setInt(8, product.getSupplier().getSupplierId());
             stmt.setString(9, product.getStatus());
             stmt.setInt(10, product.getProductId());
 
@@ -220,9 +228,9 @@ public class ProductDaoImpl implements IProductDao {
     public void reduceStock(int productId, int quantity) {
         String query = "UPDATE Products SET currentStock = currentStock - ? WHERE productId = ? AND currentStock >= ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, quantity); // Cantidad a reducir
-            stmt.setInt(2, productId); // ID del producto
-            stmt.setInt(3, quantity); // Validación para evitar stock negativo
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, productId);
+            stmt.setInt(3, quantity);
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected == 0) {
@@ -238,8 +246,8 @@ public class ProductDaoImpl implements IProductDao {
     public void increaseStock(int productId, int quantity) {
         String query = "UPDATE Products SET currentStock = currentStock + ? WHERE productId = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, quantity); // Cantidad a incrementar
-            stmt.setInt(2, productId); // ID del producto
+            stmt.setInt(1, quantity); 
+            stmt.setInt(2, productId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -284,12 +292,12 @@ public class ProductDaoImpl implements IProductDao {
                     rs.getString("productCode"),
                     rs.getString("name"),
                     rs.getString("description"),
-                    category,                                  // Relación con ProductCategory
+                    category,                              
                     rs.getDouble("purchasePrice"),
                     rs.getDouble("salePrice"),
                     rs.getInt("currentStock"),
                     rs.getInt("minStock"),
-                    supplier,                                  // Relación con Supplier
+                    supplier,          
                     rs.getString("status"),
                     rs.getTimestamp("createdAt"),
                     rs.getTimestamp("updatedAt")

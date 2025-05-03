@@ -5,11 +5,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Singleton class to manage the database connection.
+ */
 public class DBConnection {
     private static Connection connection;
 
+    /**
+     * Private constructor to prevent instantiation.
+     */
     private DBConnection() {}
 
+    /**
+     * Returns a singleton instance of the database connection.
+     * @return Connection object
+     * @throws SQLException if a database access error occurs
+     */
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
@@ -25,6 +36,7 @@ public class DBConnection {
         return connection;
     }
 
+    
     public static void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {

@@ -15,10 +15,10 @@ public class SupplierService {
     
     public boolean createSupplier(Supplier supplier) {
         try {
-            return supplierDao.createSupplier(supplier); // Llama al método del DAO que lanza SQLException
+            return supplierDao.createSupplier(supplier);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error al crear el proveedor", e); // Envolver en una excepción más genérica si es necesario
+            throw new RuntimeException("Error al crear el proveedor", e); 
         }
     }
     

@@ -28,40 +28,30 @@ public class EditCustomerForm extends CustomerFormBase {
 
     @Override
     protected void initializeUI() {
-        // Crear panel de encabezado
         JPanel headerPanel = createHeaderPanel("Editar Cliente: " + customer.getNameOrCompany());
         
-        // Panel de información del cliente
         JPanel infoPanel = createInfoPanel();
         
-        // Panel norte combinado
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.setOpaque(false);
         northPanel.add(headerPanel, BorderLayout.NORTH);
         northPanel.add(infoPanel, BorderLayout.CENTER);
         
-        // Crear panel de formulario
         formPanel = createFormPanel("Modificar Información");
         
-        // Inicializar campos
         initializeFields();
         
-        // Configurar campos en el formulario
         addFieldsToForm();
         
-        // Panel de estado
         JPanel statsPanel = createStatsPanel();
         
-        // Panel central combinado
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
         centerPanel.add(formPanel, BorderLayout.CENTER);
         centerPanel.add(statsPanel, BorderLayout.SOUTH);
         
-        // Configurar botones
         setupButtons();
         
-        // Ensamblar formulario
         mainPanel.add(northPanel, BorderLayout.NORTH);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -138,7 +128,6 @@ public class EditCustomerForm extends CustomerFormBase {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.anchor = GridBagConstraints.WEST;
         
-        // Primera columna (etiquetas)
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.3;
@@ -159,7 +148,6 @@ public class EditCustomerForm extends CustomerFormBase {
         gbc.gridy = 5;
         formPanel.add(FormStyleManager.createStyledLabel("Tipo de Cliente:"), gbc);
         
-        // Segunda columna (campos)
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.7;

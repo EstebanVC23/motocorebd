@@ -28,7 +28,6 @@ public class SaleDaoImpl implements ISaleDao {
         try {
             connection.setAutoCommit(false);
 
-            // Insertar la venta principal
             String saleQuery = "INSERT INTO Sales (invoiceNumber, saleDate, customerId, userId, subtotal, tax, discount, total, paymentMethod, status, notes) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement saleStmt = connection.prepareStatement(saleQuery, Statement.RETURN_GENERATED_KEYS);
@@ -47,14 +46,12 @@ public class SaleDaoImpl implements ISaleDao {
 
             int saleRows = saleStmt.executeUpdate();
 
-            // Obtener el ID de la venta generada
             ResultSet generatedKeys = saleStmt.getGeneratedKeys();
             int saleId = -1;
             if (generatedKeys.next()) {
                 saleId = generatedKeys.getInt(1);
             }
 
-            // Insertar los detalles de la venta
             String detailQuery = "INSERT INTO SaleDetails (saleId, productId, quantity, unitPrice, subtotal) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement detailStmt = connection.prepareStatement(detailQuery);
 
@@ -62,7 +59,7 @@ public class SaleDaoImpl implements ISaleDao {
                 detailStmt.setInt(1, saleId);
                 detailStmt.setInt(2, detail.getProductId());
                 detailStmt.setInt(3, detail.getQuantity());
-                detailStmt.setDouble(4, detail.getUnitPrice()); // Actualizar el precio unitario correctamente
+                detailStmt.setDouble(4, detail.getUnitPrice());
                 detailStmt.setDouble(5, detail.getSubtotal());
                 detailStmt.addBatch();
             }
@@ -97,11 +94,9 @@ public class SaleDaoImpl implements ISaleDao {
             PreparedStatement stmt;
 
             if (startDate == null && endDate == null) {
-                // Consulta sin filtro de fechas
                 query = "SELECT * FROM Sales";
                 stmt = connection.prepareStatement(query);
             } else {
-                // Consulta con filtro de fechas
                 query = "SELECT * FROM Sales WHERE saleDate BETWEEN ? AND ?";
                 stmt = connection.prepareStatement(query);
                 stmt.setString(1, startDate);
@@ -173,6 +168,7 @@ public class SaleDaoImpl implements ISaleDao {
         }
         return details;
     }
+
     @Override
     public boolean updateSale(Sale sale) {
         String query = "UPDATE Sales SET invoiceNumber = ?, saleDate = ?, customerId = ?, userId = ?, "
@@ -192,7 +188,7 @@ public class SaleDaoImpl implements ISaleDao {
             stmt.setString(11, sale.getNotes());
             stmt.setInt(12, sale.getSaleId());
 
-            return stmt.executeUpdate() > 0; // Devuelve true si se actualizó correctamente
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -224,7 +220,7 @@ public class SaleDaoImpl implements ISaleDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Si no se encuentra, devuelve null
+        return null;
     }
 
     @Override
@@ -233,7 +229,7 @@ public class SaleDaoImpl implements ISaleDao {
         List<SaleDetail> details = getDetails(saleId);
         if (details != null && !details.isEmpty()) {
             System.out.println("Detalle encontrado para venta ID: " + saleId);
-            return details.get(0); // Solo devuelve el primer detalle
+            return details.get(0);
         }
         System.out.println("No se encontraron detalles para venta ID: " + saleId);
         return null;
@@ -246,21 +242,17 @@ public class SaleDaoImpl implements ISaleDao {
         PreparedStatement stmt = null;
         
         try {
-            // Si ambas fechas son nulas, obtenemos todas las ventas
             if (startDate == null && endDate == null) {
                 sql = "SELECT * FROM Sales ORDER BY saleDate DESC";
                 stmt = connection.prepareStatement(sql);
             } else {
-                // Configuramos la consulta con parámetros de fecha
                 sql = "SELECT * FROM Sales WHERE saleDate BETWEEN ? AND ? ORDER BY saleDate DESC";
                 stmt = connection.prepareStatement(sql);
                 
-                // Fecha inicio (si es nula, usamos una fecha muy antigua)
                 java.sql.Date sqlStartDate = startDate != null 
                     ? new java.sql.Date(startDate.getTime()) 
                     : new java.sql.Date(0); // 1970-01-01
                 
-                // Fecha fin (si es nula, usamos la fecha actual)
                 java.sql.Date sqlEndDate = endDate != null 
                     ? new java.sql.Date(endDate.getTime()) 
                     : new java.sql.Date(System.currentTimeMillis());
@@ -373,14 +365,12 @@ public class SaleDaoImpl implements ISaleDao {
         sale.setSaleId(rs.getInt("saleId"));
         sale.setInvoiceNumber(rs.getString("invoiceNumber"));
         
-        // Puede ser que la fecha esté causando problemas
         Timestamp timestamp = rs.getTimestamp("saleDate");
         sale.setSaleDate(timestamp);
         
         sale.setCustomerId(rs.getInt("customerId"));
         sale.setUserId(rs.getInt("userId"));
         
-        // Manejo adecuado de valores DECIMAL
         try {
             sale.setSubtotal(rs.getDouble("subtotal"));
             sale.setTax(rs.getDouble("tax"));
@@ -388,7 +378,6 @@ public class SaleDaoImpl implements ISaleDao {
             sale.setTotal(rs.getDouble("total"));
         } catch (Exception e) {
             System.err.println("Error al convertir valores decimales: " + e.getMessage());
-            // Valores predeterminados en caso de error
             sale.setSubtotal(0.0);
             sale.setTax(0.0);
             sale.setDiscount(0.0);

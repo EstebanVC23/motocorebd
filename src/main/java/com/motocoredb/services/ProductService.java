@@ -53,10 +53,10 @@ public class ProductService {
 
     public List<Product> getLowStockProducts() {
         try {
-            return productDao.findLowStockProducts(); // Delegamos la consulta al DAO
+            return productDao.findLowStockProducts();
         } catch (Exception e) {
             System.err.println("Error al obtener los productos con bajo stock: " + e.getMessage());
-            return new ArrayList<>(); // Retorna una lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 }

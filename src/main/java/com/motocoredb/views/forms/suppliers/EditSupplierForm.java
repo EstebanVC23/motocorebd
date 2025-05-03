@@ -19,10 +19,10 @@ public class EditSupplierForm extends SupplierFormBase {
     private JTextField phoneField;
     private JTextField emailField;
     private JTextField addressField;
-    private JComboBox<String> statusCombo; // Añadido para gestionar el estado
+    private JComboBox<String> statusCombo;
 
     public EditSupplierForm(SupplierService supplierService, Supplier supplier) {
-        super(supplierService, "Editar Proveedor", 500, 550); // Ajusté la altura para el nuevo campo
+        super(supplierService, "Editar Proveedor", 500, 550);
         this.supplier = supplier;
         initializeUI();
         loadSupplierData();
@@ -49,7 +49,7 @@ public class EditSupplierForm extends SupplierFormBase {
         contactField = FormStyleManager.createStyledTextField();
 
         phoneField = FormStyleManager.createStyledTextField();
-        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Aplicar filtro para solo números
+        ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         emailField = FormStyleManager.createStyledTextField();
 

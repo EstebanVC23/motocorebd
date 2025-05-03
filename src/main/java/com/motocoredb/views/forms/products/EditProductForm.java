@@ -108,19 +108,19 @@ public class EditProductForm extends ProductFormBase {
 
         purchasePriceField = FormStyleManager.createStyledTextField();
         purchasePriceField.setText(String.valueOf(product.getPurchasePrice()));
-        ((AbstractDocument) purchasePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) purchasePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         salePriceField = FormStyleManager.createStyledTextField();
         salePriceField.setText(String.valueOf(product.getSalePrice()));
-        ((AbstractDocument) salePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) salePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         stockField = FormStyleManager.createStyledTextField();
         stockField.setText(String.valueOf(product.getCurrentStock()));
-        ((AbstractDocument) stockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) stockField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         minStockField = FormStyleManager.createStyledTextField();
         minStockField.setText(String.valueOf(product.getMinStock()));
-        ((AbstractDocument) minStockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) minStockField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         supplierCombo = new JComboBox<>();
         List<Supplier> suppliers = supplierService.getAllSuppliers();
@@ -230,7 +230,6 @@ public class EditProductForm extends ProductFormBase {
             product.setCategory(selectedCategory);
 
             if (productService.updateProduct(product)) {
-                // Registrar un movimiento de inventario si el stock actual ha cambiado
                 if (product.getCurrentStock() != previousStock) {
                     InventoryMovement movement = new InventoryMovement();
                     movement.setProductId(product.getProductId());
@@ -239,7 +238,7 @@ public class EditProductForm extends ProductFormBase {
                     movement.setReferenceId(product.getProductId());
                     movement.setReferenceType("Adjustment");
                     movement.setNotes("Actualización del producto desde el formulario de edición");
-                    movement.setUserId(1); // Reemplazar con ID real del usuario
+                    movement.setUserId(1);
 
                     inventoryService.recordMovement(movement);
                 }

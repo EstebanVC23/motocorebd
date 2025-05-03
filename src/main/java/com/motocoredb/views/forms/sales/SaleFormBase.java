@@ -34,12 +34,10 @@ public abstract class SaleFormBase extends JFrame {
      * Configura los paneles principales del formulario.
      */
     protected void setupPanels() {
-        // Panel contenedor principal
         containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBackground(FormStyleManager.BACKGROUND_COLOR);
         containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel redondeado para el contenido principal
         mainPanel = new FormStyleManager.RoundedPanel(new BorderLayout(15, 15), 15);
         mainPanel.setBackground(FormStyleManager.PANEL_COLOR);
         mainPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -47,33 +45,21 @@ public abstract class SaleFormBase extends JFrame {
                 BorderFactory.createEmptyBorder(20, 25, 20, 25)
         ));
 
-        // Panel para los botones
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         buttonPanel.setOpaque(false);
 
         containerPanel.add(mainPanel, BorderLayout.CENTER);
         add(containerPanel);
 
-        // Borde decorativo
         getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
     /** 
      * Crea un panel de encabezado con un icono opcional.
      */
-    protected JPanel createHeaderPanel(String title, String iconPath) {
+    protected JPanel createHeaderPanel(String title) {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setOpaque(false);
-
-        if (iconPath != null && !iconPath.isEmpty()) {
-            try {
-                ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
-                JLabel iconLabel = new JLabel(icon);
-                headerPanel.add(iconLabel, BorderLayout.WEST);
-            } catch (Exception e) {
-                // El ícono no es crítico, continuar sin él
-            }
-        }
 
         JLabel titleLabel = FormStyleManager.createHeaderLabel(title);
         headerPanel.add(titleLabel, BorderLayout.CENTER);

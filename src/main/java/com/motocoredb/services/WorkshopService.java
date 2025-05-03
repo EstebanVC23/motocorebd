@@ -93,10 +93,10 @@ public class WorkshopService {
 
     public List<Customer> getAllCustomers() {
         try {
-            return customerDao.listAllAdmin(); // Delegamos directamente al método listAll
+            return customerDao.listAllAdmin();
         } catch (Exception e) {
             System.err.println("Error al obtener la lista de clientes: " + e.getMessage());
-            return new ArrayList<>(); // Devuelve una lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 
@@ -110,16 +110,16 @@ public class WorkshopService {
             return workshopDao.getServicesByAppointmentId(appointmentId);
         } catch (Exception e) {
             System.err.println("Error al obtener los servicios de la cita: " + e.getMessage());
-            return new ArrayList<>(); // Devuelve una lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 
     public List<WorkshopAppointment> getAppointmentsByDateRange(Date startDate, Date endDate) {
         try {
-            return workshopDao.findByDateRange(startDate, endDate); // Delegamos la consulta al DAO
+            return workshopDao.findByDateRange(startDate, endDate);
         } catch (Exception e) {
             System.err.println("Error al obtener citas por rango de fechas: " + e.getMessage());
-            return new ArrayList<>(); // Retorna una lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 }

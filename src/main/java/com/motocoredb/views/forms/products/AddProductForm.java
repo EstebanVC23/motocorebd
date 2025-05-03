@@ -70,17 +70,17 @@ public class AddProductForm extends ProductFormBase {
         descriptionField = FormStyleManager.createStyledTextField();
 
         purchasePriceField = FormStyleManager.createStyledTextField();
-        ((AbstractDocument) purchasePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) purchasePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         salePriceField = FormStyleManager.createStyledTextField();
-        ((AbstractDocument) salePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) salePriceField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         stockField = FormStyleManager.createStyledTextField();
-        ((AbstractDocument) stockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) stockField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         minStockField = FormStyleManager.createStyledTextField();
         minStockField.setText("5");
-        ((AbstractDocument) minStockField.getDocument()).setDocumentFilter(new NumericDocumentFilter()); // Solo números
+        ((AbstractDocument) minStockField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
 
         supplierCombo = new JComboBox<>();
         List<Supplier> suppliers = supplierService.getAllSuppliers();
@@ -180,7 +180,6 @@ public class AddProductForm extends ProductFormBase {
 
     private void saveProduct() {
         try {
-            // Crear un nuevo producto con los datos del formulario
             Product newProduct = new Product();
             newProduct.setProductCode(codeField.getText());
             newProduct.setProductName(nameField.getText());
@@ -192,7 +191,6 @@ public class AddProductForm extends ProductFormBase {
             newProduct.setStatus("Active");
             newProduct.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     
-            // Asociar proveedor y categoría seleccionados
             Supplier selectedSupplier = (Supplier) supplierCombo.getSelectedItem();
             if (selectedSupplier != null) {
                 newProduct.setSupplier(selectedSupplier);
@@ -209,30 +207,27 @@ public class AddProductForm extends ProductFormBase {
                 return;
             }
     
-            // Registrar el producto en la base de datos
             if (productService.createProduct(newProduct)) {
-                // Registrar movimiento de inventario
                 InventoryMovement movement = new InventoryMovement();
                 movement.setProductId(newProduct.getProductId());
                 movement.setMovementType("In");
                 movement.setQuantity(newProduct.getCurrentStock());
-                movement.setReferenceId(newProduct.getProductId()); // Usar ID del producto como referencia
+                movement.setReferenceId(newProduct.getProductId());
                 movement.setReferenceType("Adjustment");
                 movement.setNotes("Movimiento inicial al agregar producto");
-                movement.setUserId(1); // Cambiar por el ID real del usuario
+                movement.setUserId(1);
     
                 if (!inventoryService.recordMovement(movement)) {
                     FormStyleManager.showErrorDialog(this, "Error al registrar el movimiento de inventario.");
                     return;
                 }
     
-                // Registrar la compra y los detalles
                 Purchase newPurchase = new Purchase();
-                newPurchase.setInvoiceNumber("AUTO-" + System.currentTimeMillis()); // Generar número automático de factura
+                newPurchase.setInvoiceNumber("AUTO-" + System.currentTimeMillis()); 
                 newPurchase.setSupplierId(selectedSupplier.getSupplierId());
-                newPurchase.setUserId(1); // Cambiar por el ID real del usuario
+                newPurchase.setUserId(1);
                 newPurchase.setSubtotal(newProduct.getPurchasePrice() * newProduct.getCurrentStock());
-                newPurchase.setTax(newPurchase.getSubtotal() * 0.19); // Ejemplo de 19% de IVA
+                newPurchase.setTax(newPurchase.getSubtotal() * 0.19);
                 newPurchase.setTotal(newPurchase.getSubtotal() + newPurchase.getTax());
                 newPurchase.setStatus("Received");
                 newPurchase.setNotes("Compra generada automáticamente tras agregar el producto.");
@@ -248,7 +243,6 @@ public class AddProductForm extends ProductFormBase {
                     return;
                 }
     
-                // Mostrar mensaje de éxito
                 FormStyleManager.showSuccessDialog(this, "Producto agregado exitosamente");
                 dispose();
             } else {

@@ -26,22 +26,16 @@ public class AddCustomerForm extends CustomerFormBase {
 
     @Override
     protected void initializeUI() {
-        // Crear panel de encabezado
         JPanel headerPanel = createHeaderPanel("Agregar Nuevo Cliente");
         
-        // Crear panel de formulario
         formPanel = createFormPanel("Información del Cliente");
         
-        // Inicializar campos
         initializeFields();
         
-        // Configurar campos en el formulario
         addFieldsToForm();
         
-        // Configurar botones
         setupButtons();
         
-        // Ensamblar formulario
         mainPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -57,7 +51,6 @@ public class AddCustomerForm extends CustomerFormBase {
         addressField = FormStyleManager.createStyledTextField();
         identityDocumentField = FormStyleManager.createStyledTextField();
     
-        // Agregar filtros para que solo se permitan números
         ((AbstractDocument) phoneField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
         ((AbstractDocument) identityDocumentField.getDocument()).setDocumentFilter(new NumericDocumentFilter());
     
@@ -77,7 +70,6 @@ public class AddCustomerForm extends CustomerFormBase {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.anchor = GridBagConstraints.WEST;
         
-        // Primera columna (etiquetas)
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.3;
@@ -98,7 +90,6 @@ public class AddCustomerForm extends CustomerFormBase {
         gbc.gridy = 5;
         formPanel.add(FormStyleManager.createStyledLabel("Tipo de Cliente:"), gbc);
         
-        // Segunda columna (campos)
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.7;

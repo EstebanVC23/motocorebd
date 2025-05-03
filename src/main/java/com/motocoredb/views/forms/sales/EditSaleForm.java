@@ -41,7 +41,7 @@ public class EditSaleForm extends SaleFormBase {
 
     @Override
     protected void initializeUI() {
-        JPanel headerPanel = createHeaderPanel("Editar Venta: #" + sale.getInvoiceNumber(), "/icons/sale_edit.png");
+        JPanel headerPanel = createHeaderPanel("Editar Venta: #" + sale.getInvoiceNumber());
         formPanel = createFormPanel("Detalles de la Venta");
 
         initializeFields();
@@ -54,7 +54,6 @@ public class EditSaleForm extends SaleFormBase {
     }
 
     private void initializeFields() {
-        // Campo para seleccionar cliente
         customerCombo = new JComboBox<>();
         List<Customer> customers = customerService.getAllCustomers();
         customers.forEach(customerCombo::addItem);
@@ -65,21 +64,17 @@ public class EditSaleForm extends SaleFormBase {
             return label;
         });
 
-        // Etiqueta para mostrar el nombre del producto
         Product product = productService.getProductById(saleDetail.getProductId());
         productLabel = new JLabel(product != null ? product.getProductName() : "Producto no encontrado");
         productLabel.setFont(FormStyleManager.FIELD_FONT);
 
-        // Etiqueta para mostrar la cantidad
         quantityLabel = new JLabel("Cantidad vendida: " + saleDetail.getQuantity());
         quantityLabel.setFont(FormStyleManager.FIELD_FONT);
 
-        // Desplegable para el estado de la venta
         statusCombo = new JComboBox<>(new String[]{"Completed", "Cancelled"});
         statusCombo.setSelectedItem(sale.getStatus());
         statusCombo.setFont(FormStyleManager.FIELD_FONT);
 
-        // Campo de notas
         notesField = new JTextArea(5, 20);
         notesField.setLineWrap(true);
         notesField.setWrapStyleWord(true);
@@ -139,31 +134,24 @@ public class EditSaleForm extends SaleFormBase {
 
     private void updateSale(ActionEvent e) {
         try {
-            // Actualizar cliente
             sale.setCustomerId(((Customer) customerCombo.getSelectedItem()).getCustomerId());
 
-            // Cambiar estado
             String newStatus = (String) statusCombo.getSelectedItem();
             String oldStatus = sale.getStatus();
             sale.setStatus(newStatus);
 
-            // Actualizar notas
             sale.setNotes(notesField.getText().isEmpty() ? null : notesField.getText());
 
-            // Manejo del stock según el cambio de estado
             Product product = productService.getProductById(saleDetail.getProductId());
             if (product != null) {
                 if ("Completed".equals(oldStatus) && "Cancelled".equals(newStatus)) {
-                    // Devolver stock
                     productService.increaseStock(product.getProductId(), saleDetail.getQuantity());
                 } else if ("Cancelled".equals(oldStatus) && "Completed".equals(newStatus)) {
-                    // Reducir stock
                     productService.reduceStock(product.getProductId(), saleDetail.getQuantity());
 
-                    // Verificar si el stock baja al nivel mínimo o por debajo
                     int updatedStock = product.getCurrentStock() - saleDetail.getQuantity();
                     if (updatedStock <= product.getMinStock()) {
-                        AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+                        AlertService alertService = new AlertService(new AlertDaoImpl());
 
                         Alert newAlert = new Alert();
                         newAlert.setAlertType("Low stock");
@@ -173,7 +161,7 @@ public class EditSaleForm extends SaleFormBase {
                         newAlert.setReferenceId(product.getProductId());
                         newAlert.setReferenceType("Product");
 
-                        boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                        boolean alertCreated = alertService.createAlert(newAlert);
                         if (!alertCreated) {
                             FormStyleManager.showErrorDialog(this, "Error al generar la alerta de bajo stock.");
                         }
@@ -181,7 +169,6 @@ public class EditSaleForm extends SaleFormBase {
                 }
             }
 
-            // Guardar cambios
             if (saleService.updateSale(sale)) {
                 FormStyleManager.showSuccessDialog(this, "Venta actualizada exitosamente.");
                 dispose();

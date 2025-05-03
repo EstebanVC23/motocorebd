@@ -15,12 +15,10 @@ import java.time.Instant;
  */
 public class RegisterFrame extends JFrame {
 
-    // Definición de colores y fuentes
     private final Color COLOR_FONDO = new Color(236, 240, 241);
     private final Color COLOR_TEXTO = new Color(44, 62, 80);
     private final Font FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, 24);
 
-    // Componentes de la interfaz
     private JTextField campoIdentityDocument;
     private JTextField campoUsername;
     private JPasswordField campoPassword;
@@ -81,7 +79,6 @@ public class RegisterFrame extends JFrame {
         panelDerecho.setLayout(new BorderLayout(20, 20));
         panelDerecho.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        // Panel del título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setOpaque(false);
         JLabel labelTitulo = new JLabel("Registrar Usuario");
@@ -89,7 +86,6 @@ public class RegisterFrame extends JFrame {
         labelTitulo.setFont(FUENTE_TITULO);
         panelTitulo.add(labelTitulo);
 
-        // Panel del formulario
         JPanel panelFormulario = new JPanel();
         panelFormulario.setOpaque(false);
         panelFormulario.setLayout(new GridBagLayout());
@@ -101,7 +97,6 @@ public class RegisterFrame extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campo de documento de identidad
         JPanel panelIdentityDocument = new JPanel(new BorderLayout(5, 5));
         panelIdentityDocument.setOpaque(false);
         panelIdentityDocument.add(new JLabel("Documento de Identidad:"), BorderLayout.NORTH);
@@ -109,7 +104,6 @@ public class RegisterFrame extends JFrame {
         campoIdentityDocument.setPreferredSize(new Dimension(300, 30));
         panelIdentityDocument.add(campoIdentityDocument, BorderLayout.CENTER);
 
-        // Campo de nombre de usuario
         JPanel panelUsername = new JPanel(new BorderLayout(5, 5));
         panelUsername.setOpaque(false);
         panelUsername.add(new JLabel("Nombre de Usuario:"), BorderLayout.NORTH);
@@ -117,7 +111,6 @@ public class RegisterFrame extends JFrame {
         campoUsername.setPreferredSize(new Dimension(300, 30));
         panelUsername.add(campoUsername, BorderLayout.CENTER);
 
-        // Campo de contraseña
         JPanel panelPassword = new JPanel(new BorderLayout(5, 5));
         panelPassword.setOpaque(false);
         panelPassword.add(new JLabel("Contraseña:"), BorderLayout.NORTH);
@@ -125,7 +118,6 @@ public class RegisterFrame extends JFrame {
         campoPassword.setPreferredSize(new Dimension(300, 30));
         panelPassword.add(campoPassword, BorderLayout.CENTER);
 
-        // Campo de confirmar contraseña
         JPanel panelConfirmPassword = new JPanel(new BorderLayout(5, 5));
         panelConfirmPassword.setOpaque(false);
         panelConfirmPassword.add(new JLabel("Confirmar Contraseña:"), BorderLayout.NORTH);
@@ -133,7 +125,6 @@ public class RegisterFrame extends JFrame {
         campoConfirmPassword.setPreferredSize(new Dimension(300, 30));
         panelConfirmPassword.add(campoConfirmPassword, BorderLayout.CENTER);
 
-        // Botones
         botonRegistrar = new JButton("Registrar");
         botonRegistrar.setPreferredSize(new Dimension(150, 40));
         botonRegistrar.setBackground(new Color(46, 204, 113));
@@ -146,7 +137,6 @@ public class RegisterFrame extends JFrame {
         botonVolver.setForeground(new Color(41, 128, 185));
         botonVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Agregar componentes al formulario
         panelFormulario.add(panelIdentityDocument, gbc);
         panelFormulario.add(panelUsername, gbc);
         panelFormulario.add(panelPassword, gbc);
@@ -154,7 +144,6 @@ public class RegisterFrame extends JFrame {
         panelFormulario.add(botonRegistrar, gbc);
         panelFormulario.add(botonVolver, gbc);
 
-        // Agregar paneles al panel derecho
         panelDerecho.add(panelTitulo, BorderLayout.NORTH);
         panelDerecho.add(panelFormulario, BorderLayout.CENTER);
 
@@ -168,7 +157,6 @@ public class RegisterFrame extends JFrame {
             String password = new String(campoPassword.getPassword()).trim();
             String confirmPassword = new String(campoConfirmPassword.getPassword()).trim();
 
-            // Validaciones básicas
             if (identityDocument.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 JOptionPane.showMessageDialog(this, 
                     "Por favor complete todos los campos", 
@@ -177,7 +165,6 @@ public class RegisterFrame extends JFrame {
                 return;
             }
 
-            // Verificar que las contraseñas coincidan
             if (!password.equals(confirmPassword)) {
                 JOptionPane.showMessageDialog(this, 
                     "Las contraseñas no coinciden", 
@@ -186,7 +173,6 @@ public class RegisterFrame extends JFrame {
                 return;
             }
 
-            // Verificar que exista un miembro del staff con ese documento de identidad
             Staff existingStaff = authController.findStaffByIdentityDocument(identityDocument);
             if (existingStaff == null) {
                 JOptionPane.showMessageDialog(this, 
@@ -196,7 +182,6 @@ public class RegisterFrame extends JFrame {
                 return;
             }
 
-            // Verificar que este staff no tenga ya un usuario asociado
             if (authController.isStaffAssociatedWithUser(existingStaff.getStaffId())) {
                 JOptionPane.showMessageDialog(this, 
                     "Este miembro del personal ya tiene un usuario registrado", 
@@ -205,7 +190,6 @@ public class RegisterFrame extends JFrame {
                 return;
             }
 
-            // Verificar que el nombre de usuario no esté ya en uso
             if (authController.isUsernameInUse(username)) {
                 JOptionPane.showMessageDialog(this, 
                     "El nombre de usuario ya está en uso", 
@@ -214,7 +198,6 @@ public class RegisterFrame extends JFrame {
                 return;
             }
 
-            // Crear un nuevo usuario con los datos del staff
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPassword(password);
@@ -224,7 +207,6 @@ public class RegisterFrame extends JFrame {
             newUser.setCreatedAt(Timestamp.from(Instant.now()));
             newUser.setLastLogin(null);
             
-            // Intentar registrar el usuario
             boolean registroExitoso = authController.registerUser(newUser, existingStaff.getStaffId());
             
             if (registroExitoso) {
@@ -233,7 +215,6 @@ public class RegisterFrame extends JFrame {
                     "Éxito", 
                     JOptionPane.INFORMATION_MESSAGE);
                 
-                // Volver a la pantalla de login
                 dispose();
                 new LoginFrame(authController).setVisible(true);
             } else {
@@ -244,7 +225,6 @@ public class RegisterFrame extends JFrame {
             }
         });
 
-        // Acción para volver al login
         botonVolver.addActionListener(e -> {
             dispose();
             new LoginFrame(authController).setVisible(true);

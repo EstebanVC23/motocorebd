@@ -34,12 +34,10 @@ public abstract class ProductFormBase extends JFrame {
      * Configura los paneles básicos del formulario
      */
     protected void setupPanels() {
-        // Panel contenedor principal
         containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBackground(FormStyleManager.BACKGROUND_COLOR);
         containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Panel redondeado para el contenido principal
         mainPanel = new FormStyleManager.RoundedPanel(new BorderLayout(15, 15), 15);
         mainPanel.setBackground(FormStyleManager.PANEL_COLOR);
         mainPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -47,19 +45,17 @@ public abstract class ProductFormBase extends JFrame {
                 BorderFactory.createEmptyBorder(20, 25, 20, 25)
         ));
         
-        // Panel para los botones
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         buttonPanel.setOpaque(false);
         
         containerPanel.add(mainPanel, BorderLayout.CENTER);
         add(containerPanel);
         
-        // Borde decorativo para efectos visuales
         getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
     /**
-     * Crea un panel de encabezado con icono opcional
+     * Crea un panel de encabezado opcional
      */
     protected JPanel createHeaderPanel(String title) {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));

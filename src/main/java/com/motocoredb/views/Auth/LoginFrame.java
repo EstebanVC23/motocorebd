@@ -14,12 +14,10 @@ import java.awt.*;
  */
 public class LoginFrame extends JFrame {
 
-    // Definición de colores y fuentes
     private final Color COLOR_FONDO = new Color(236, 240, 241);
     private final Color COLOR_TEXTO = new Color(44, 62, 80);
     private final Font FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, 24);
 
-    // Componentes de la interfaz
     private JTextField campoUsuario;
     private JPasswordField campoPassword;
     private JButton botonLogin;
@@ -78,7 +76,6 @@ public class LoginFrame extends JFrame {
         panelDerecho.setLayout(new BorderLayout(20, 20));
         panelDerecho.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        // Panel del título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setOpaque(false);
         JLabel labelTitulo = new JLabel("Iniciar Sesión");
@@ -86,7 +83,6 @@ public class LoginFrame extends JFrame {
         labelTitulo.setFont(FUENTE_TITULO);
         panelTitulo.add(labelTitulo);
 
-        // Panel del formulario
         JPanel panelFormulario = new JPanel();
         panelFormulario.setOpaque(false);
         panelFormulario.setLayout(new GridBagLayout());
@@ -98,7 +94,6 @@ public class LoginFrame extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campo de usuario
         JPanel panelUsuario = new JPanel(new BorderLayout(5, 5));
         panelUsuario.setOpaque(false);
         panelUsuario.add(new JLabel("Usuario:"), BorderLayout.NORTH);
@@ -106,7 +101,6 @@ public class LoginFrame extends JFrame {
         campoUsuario.setPreferredSize(new Dimension(300, 30));
         panelUsuario.add(campoUsuario, BorderLayout.CENTER);
 
-        // Campo de contraseña
         JPanel panelPassword = new JPanel(new BorderLayout(5, 5));
         panelPassword.setOpaque(false);
         panelPassword.add(new JLabel("Contraseña:"), BorderLayout.NORTH);
@@ -114,7 +108,6 @@ public class LoginFrame extends JFrame {
         campoPassword.setPreferredSize(new Dimension(300, 30));
         panelPassword.add(campoPassword, BorderLayout.CENTER);
 
-        // Botones
         botonLogin = new JButton("Ingresar");
         botonLogin.setPreferredSize(new Dimension(150, 40));
         botonLogin.setBackground(new Color(46, 204, 113));
@@ -127,21 +120,16 @@ public class LoginFrame extends JFrame {
         botonRegistro.setForeground(new Color(41, 128, 185));
         botonRegistro.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Agregar componentes al formulario
         panelFormulario.add(panelUsuario, gbc);
         panelFormulario.add(panelPassword, gbc);
         panelFormulario.add(botonLogin, gbc);
         panelFormulario.add(botonRegistro, gbc);
 
-        // Agregar paneles al panel derecho
         panelDerecho.add(panelTitulo, BorderLayout.NORTH);
         panelDerecho.add(panelFormulario, BorderLayout.CENTER);
 
         add(panelDerecho);
     }
-
-    // Modifica la parte del evento del botón de login en la clase LoginFrame.java
-    // Reemplaza la sección dentro de configurarEventos() donde procesas el login
 
     private void configurarEventos() {
         botonLogin.addActionListener(e -> {
@@ -156,11 +144,9 @@ public class LoginFrame extends JFrame {
                 return;
             }
 
-            // Realizamos el login a través del controlador
             User authenticatedUser = authController.login(username, password);
             
             if (authenticatedUser != null) {
-                // Comprobamos el estado del usuario
                 if (!"Active".equals(authenticatedUser.getStatus())) {
                     JOptionPane.showMessageDialog(this, 
                         "El usuario está inactivo. Contacte al administrador.", 
@@ -169,23 +155,18 @@ public class LoginFrame extends JFrame {
                     return;
                 }
                 
-                // Actualizamos la fecha del último inicio de sesión
                 java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
                 authenticatedUser.setLastLogin(currentTimestamp);
                 
-                // Actualizamos el lastLogin en la base de datos
                 boolean updated = authController.updateUserLastLogin(authenticatedUser.getUsername(), currentTimestamp);
                 if (!updated) {
                     System.out.println("No se pudo actualizar el último inicio de sesión");
                 }
 
-                // Guardamos la sesión del usuario utilizando el SessionManager
                 SessionManager.setSession(authenticatedUser);
                 
-                // Cerramos la ventana de login
                 dispose();
                 
-                // Redirigimos según el rol del usuario
                 String userRole = authenticatedUser.getRole();
                 if ("Administrador".equals(userRole)) {
                     new AdminMainFrame(authenticatedUser, authController).setVisible(true);
@@ -205,7 +186,6 @@ public class LoginFrame extends JFrame {
             new RegisterFrame(authController).setVisible(true);
         });
 
-        // Evento para presionar Enter en el campo de contraseña
         campoPassword.addActionListener(e -> botonLogin.doClick());
     }
 }

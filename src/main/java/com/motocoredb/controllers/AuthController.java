@@ -10,9 +10,13 @@ import com.motocoredb.services.AuthService;
 import com.motocoredb.utils.DBConnection;
 import com.motocoredb.utils.SessionManager;
 
+/**
+ * Controlador para la autenticación de usuarios y gestión de sesiones.
+ * Proporciona métodos para iniciar sesión, registrar usuarios y gestionar la sesión actual.
+ */
 public class AuthController {
     private final AuthService authService;
-    private User currentUser; // Para manejar el usuario actual
+    private User currentUser;
     
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -115,7 +119,6 @@ public class AuthController {
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            // Usamos la fecha y hora actual como último login
             java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(System.currentTimeMillis());
             
             pstmt.setTimestamp(1, currentTimestamp);
@@ -135,7 +138,6 @@ public class AuthController {
      * No intenta actualizar la base de datos, solo limpia la sesión actual
      */
     public void logout() {
-        // Limpia la sesión actual sin intentar actualizar la base de datos
         SessionManager.clearSession();
     }
 }

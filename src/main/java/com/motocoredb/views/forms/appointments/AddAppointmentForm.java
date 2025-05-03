@@ -31,7 +31,7 @@ public class AddAppointmentForm extends AppointmentFormBase {
     private List<AppointmentService> services;
 
     public AddAppointmentForm(WorkshopService workshopService, List<Customer> customers) {
-        super("Agendar Cita", 600, 800); // Ajustar tamaño y título del formulario
+        super("Agendar Cita", 600, 800);
         this.workshopService = workshopService;
         this.services = new ArrayList<>();
         this.customers = customers;
@@ -44,7 +44,6 @@ public class AddAppointmentForm extends AppointmentFormBase {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Configuración del ComboBox de clientes
         customerCombo = new JComboBox<>();
         customerCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -59,21 +58,17 @@ public class AddAppointmentForm extends AppointmentFormBase {
         });
         populateCustomerCombo();
 
-        // Configuración de otros campos
         reasonField = FormStyleManager.createStyledTextField();
         motorcycleDescField = FormStyleManager.createStyledTextField();
         motorcyclePlateField = FormStyleManager.createStyledTextField();
         notesArea = new JTextArea(4, 20);
 
-        // Configuración del ComboBox de estado
         statusCombo = new JComboBox<>(new String[]{"Scheduled", "In progress", "Completed", "Cancelled"});
 
-        // Configuración de selectores de fecha y hora
         dateChooser = new JDateChooser();
         dateChooser.setDateFormatString("yyyy-MM-dd");
         timePicker = new TimePicker();
 
-        // Agregar los campos al formulario
         addFormField("Cliente:", customerCombo, gbc, 0);
         addFormField("Razón de la visita:", reasonField, gbc, 1);
         addFormField("Descripción de motocicleta:", motorcycleDescField, gbc, 2);
@@ -113,24 +108,21 @@ public class AddAppointmentForm extends AppointmentFormBase {
                 return;
             }
 
-            // Obtener la hora desde el TimePicker
             String timeText = timePicker.getText();
             if (timeText == null || timeText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Debe seleccionar una hora.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Convertir la hora al formato de 24 horas
             java.sql.Time timeIn24Hours;
             try {
-                java.time.LocalTime localTime = timePicker.getTime(); // Obtener el tiempo como LocalTime directamente del TimePicker
-                timeIn24Hours = java.sql.Time.valueOf(localTime); // Convertir LocalTime a Time
+                java.time.LocalTime localTime = timePicker.getTime();
+                timeIn24Hours = java.sql.Time.valueOf(localTime);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Formato de hora inválido. Asegúrese de usar correctamente el selector.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Configurar la cita
             WorkshopAppointment appointment = new WorkshopAppointment();
             Customer selectedCustomer = (Customer) customerCombo.getSelectedItem();
             appointment.setCustomerId(selectedCustomer.getCustomerId());
@@ -139,15 +131,13 @@ public class AddAppointmentForm extends AppointmentFormBase {
             appointment.setMotorcyclePlate(motorcyclePlateField.getText().trim());
             appointment.setStatus((String) statusCombo.getSelectedItem());
             appointment.setScheduledDate(new java.sql.Date(dateChooser.getDate().getTime()));
-            appointment.setScheduledTime(timeIn24Hours); // Guardar la hora en formato de 24 horas
+            appointment.setScheduledTime(timeIn24Hours);
             appointment.setNotes(notesArea.getText());
             appointment.setUserId(1);
 
-            // Guardar la cita
             if (workshopService.createAppointment(appointment, services)) {
-                // Crear una alerta para la cita
                 try {
-                    AlertService alertService = new AlertService(new AlertDaoImpl()); // Inicializar el servicio de alertas
+                    AlertService alertService = new AlertService(new AlertDaoImpl());
 
                     Alert newAlert = new Alert();
                     newAlert.setAlertType("Upcoming appointment");
@@ -156,10 +146,10 @@ public class AddAppointmentForm extends AppointmentFormBase {
                                         appointment.getScheduledDate());
                     newAlert.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
                     newAlert.setStatus("Pending");
-                    newAlert.setReferenceId(appointment.getAppointmentId()); // ID de la cita como referencia
+                    newAlert.setReferenceId(appointment.getAppointmentId());
                     newAlert.setReferenceType("Appointment");
 
-                    boolean alertCreated = alertService.createAlert(newAlert); // Registrar la alerta
+                    boolean alertCreated = alertService.createAlert(newAlert);
                     if (!alertCreated) {
                         JOptionPane.showMessageDialog(this, "Error al generar la alerta para la cita agendada.", "Error", JOptionPane.ERROR_MESSAGE);
                     }

@@ -63,12 +63,12 @@ public class WorkshopDaoImpl implements IWorkshopDao {
 public int setStateOfAppointment(int appointmentId, String state) {
     String query = "UPDATE WorkshopAppointments SET status = ? WHERE appointmentId = ?";
     try (PreparedStatement stmt = connection.prepareStatement(query)) {
-        stmt.setString(1, state); // Actualiza el estado de la cita
-        stmt.setInt(2, appointmentId); // Identifica la cita por su ID
-        return stmt.executeUpdate(); // Retorna el número de filas afectadas
+        stmt.setString(1, state); 
+        stmt.setInt(2, appointmentId); 
+        return stmt.executeUpdate();
     } catch (SQLException e) {
         e.printStackTrace();
-        return 0; // Si ocurre un error, retorna 0
+        return 0;
     }
 }
 
@@ -232,21 +232,20 @@ public int setStateOfAppointment(int appointmentId, String state) {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    // Create and populate AppointmentService object
                     AppointmentService service = new AppointmentService(
-                            rs.getInt("appointment_service_id"), // Map appointment_service_id
-                            rs.getInt("appointment_id"),        // Map appointment_id
-                            rs.getDouble("charged_price"),      // Map charged_price
-                            rs.getString("notes")               // Map notes
+                            rs.getInt("appointment_service_id"), 
+                            rs.getInt("appointment_id"),     
+                            rs.getDouble("charged_price"),     
+                            rs.getString("notes")             
                     );
-                    services.add(service); // Add to the list
+                    services.add(service);
                 }
             }
         } catch (SQLException e) {
             System.err.println("Error al obtener los servicios asociados a la cita: " + e.getMessage());
         }
 
-        return services; // Return the list of services
+        return services;
     }
 
     @Override
@@ -255,7 +254,7 @@ public int setStateOfAppointment(int appointmentId, String state) {
         String query = "SELECT * FROM WorkshopAppointments WHERE scheduledDate BETWEEN ? AND ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setDate(1, new java.sql.Date(startDate.getTime())); // Convert to java.sql.Date
+            stmt.setDate(1, new java.sql.Date(startDate.getTime())); 
             stmt.setDate(2, new java.sql.Date(endDate.getTime()));
 
             try (ResultSet rs = stmt.executeQuery()) {

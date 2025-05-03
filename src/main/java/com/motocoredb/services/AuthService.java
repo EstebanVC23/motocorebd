@@ -32,15 +32,12 @@ public class AuthService {
             if (user != null) {
                 System.out.println("[DEBUG] Contraseña almacenada: " + user.getPassword());
 
-                // Verificación para contraseña hasheada
                 boolean isValid = PasswordUtils.verify(password, user.getPassword());
 
-                // Si falla, verificar si es contraseña plana (solo durante transición)
                 if (!isValid && user.getPassword().equals(password)) {
                     System.out.println("[WARNING] Usando contraseña plana - Debe actualizarse");
                     isValid = true;
 
-                    // Actualizar a contraseña hasheada automáticamente
                     String hashedPassword = PasswordUtils.encrypt(password);
                     userDao.changePassword(user.getUserId(), hashedPassword);
                     System.out.println("[INFO] Contraseña actualizada a formato hasheado");
@@ -67,17 +64,14 @@ public class AuthService {
      */
     public boolean register(User user) {
         try {
-            // Validación básica
             if (user.getPassword() == null || user.getPassword().isEmpty()) {
                 throw new IllegalArgumentException("La contraseña no puede estar vacía");
             }
 
-            // Verificar si el usuario ya existe
             if (userDao.findByUsername(user.getUsername()) != null) {
                 throw new IllegalStateException("El nombre de usuario ya existe");
             }
 
-            // Hash de la contraseña ANTES de almacenarla
             String encryptedPassword = PasswordUtils.encrypt(user.getPassword());
             user.setPassword(encryptedPassword);
             user.setStatus("Active");
@@ -100,33 +94,26 @@ public class AuthService {
      */
     public boolean registerUser(User user, int staffId) {
         try {
-            // Validación básica
             if (user.getPassword() == null || user.getPassword().isEmpty()) {
                 throw new IllegalArgumentException("La contraseña no puede estar vacía");
             }
 
-            // Verificar si el usuario ya existe
             if (userDao.findByUsername(user.getUsername()) != null) {
                 throw new IllegalStateException("El nombre de usuario ya existe");
             }
 
-            // Hash de la contraseña ANTES de almacenarla usando PasswordUtils
             String encryptedPassword = PasswordUtils.encrypt(user.getPassword());
             user.setPassword(encryptedPassword);
 
-            // Establecer timestamp de creación si no está definido
             if (user.getCreatedAt() == null) {
                 user.setCreatedAt(Timestamp.from(Instant.now()));
             }
 
-            // Crear el usuario y obtener su ID
             boolean userCreated = userDao.createUser(user);
 
             if (userCreated) {
-                // Obtener el ID del usuario recién creado
                 User createdUser = userDao.findByUsername(user.getUsername());
                 if (createdUser != null) {
-                    // Asociar el staff con el usuario
                     boolean staffUpdated = updateUserIdForStaff(staffId, createdUser.getUserId());
                     return staffUpdated;
                 }
